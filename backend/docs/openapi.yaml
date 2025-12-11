@@ -1,0 +1,687 @@
+openapi: 3.0.3
+info:
+  title: Women Well-Being API
+  version: 1.0.0
+  description: >
+    Backend API for the Women's Well-Being evaluation platform.
+    All endpoints are prefixed with /api in production (see servers section).
+
+servers:
+  - url: /api
+    description: Main API prefix
+
+tags:
+  - name: System
+  - name: Locations
+  - name: Indicators
+  - name: Observations
+  - name: Compare
+  - name: Policies
+  - name: Search
+  - name: Research
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Service liveness and DB connectivity check.
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                  db:
+                    type: string
+                    example: up
+
+  /locations:
+    get:
+      tags: [Locations]
+      summary: List locations
+      description: >
+        Returns paginated list of locations (countries, missions, etc.)
+        with optional text search and region filter.
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Text search by name or ISO3 code.
+        - in: query
+          name: region
+          schema:
+            type: string
+          description: Filter by region name.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: type
+          schema:
+            type: string
+            example: country
+          description: Filter by location type (e.g. "country", "un_mission").
+      responses:
+        '200':
+          description: List of locations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Location'
+
+  /locations/{iso3}:
+    get:
+      tags: [Locations]
+      summary: Get location by ISO3
+      parameters:
+        - in: path
+          name: iso3
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 10
+          description: ISO3 country code.
+      responses:
+        '200':
+          description: Location details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Location not found
+
+  /indicators:
+    get:
+      tags: [Indicators]
+      summary: List indicators
+      description: Returns paginated list of indicators with optional text and domain filter.
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search by indicator code or name.
+        - in: query
+          name: domain
+          schema:
+            type: string
+          description: Filter by indicator domain code.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of indicators
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Indicator'
+
+  /indicators/{code}:
+    get:
+      tags: [Indicators]
+      summary: Get indicator by code
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema:
+            type: string
+          description: Internal indicator code (e.g. WBL_INDEX).
+      responses:
+        '200':
+          description: Indicator details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Indicator'
+        '404':
+          description: Indicator not found
+
+  /observations:
+    get:
+      tags: [Observations]
+      summary: Time series of observations for indicator and location
+      description: >
+        Returns all observations for a given indicator and location;
+        can be filtered by year range and disaggregations.
+      parameters:
+        - in: query
+          name: indicatorCode
+          required: true
+          schema:
+            type: string
+          description: Indicator code (from indicators.code).
+        - in: query
+          name: locationIso3
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+          description: ISO3 code of the location.
+        - in: query
+          name: yearFrom
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+        - in: query
+          name: yearTo
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+        - in: query
+          name: genderCode
+          schema:
+            type: string
+          description: Gender code (FEMALE, MALE, BOTH).
+        - in: query
+          name: ageGroupCode
+          schema:
+            type: string
+          description: Age group code (TOTAL, PRIME_AGE, etc.).
+        - in: query
+          name: childrenCode
+          schema:
+            type: string
+          description: Children count code (NONE, ONE_TWO, THREEP, ...).
+        - in: query
+          name: householdCode
+          schema:
+            type: string
+          description: Household type code (NUCLEAR, EXTENDED, ...).
+      responses:
+        '200':
+          description: Time series of observations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  indicator:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      higher_is_better:
+                        type: boolean
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Observation'
+
+  /compare:
+    get:
+      tags: [Compare]
+      summary: Compare several locations by indicator in a given year
+      parameters:
+        - in: query
+          name: indicatorCode
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+        - in: query
+          name: locations
+          required: true
+          schema:
+            type: string
+          description: >
+            Comma-separated list of ISO3 codes (e.g. "SWE,NOR,ISL").
+      responses:
+        '200':
+          description: Comparison result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  indicator:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      year:
+                        type: integer
+                      higher_is_better:
+                        type: boolean
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Observation'
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Indicator not found
+
+  /policies:
+    get:
+      tags: [Policies]
+      summary: List qualitative policy records
+      description: >
+        Returns policy / measures records from UN Women VAW dataset,
+        optionally filtered by country, year range, form of violence and type of measure.
+      parameters:
+        - in: query
+          name: locationIso3
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+        - in: query
+          name: yearFrom
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+        - in: query
+          name: yearTo
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+        - in: query
+          name: formOfViolence
+          schema:
+            type: string
+        - in: query
+          name: measureType
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of policy records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PolicyRecord'
+  /research/templates:
+    get:
+      tags: [Research]
+      summary: List research templates and briefs
+      description: >
+        Returns metadata for all research templates / briefs
+        shown on the Research page (without heavy data tables).
+      responses:
+        '200':
+          description: List of research templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResearchTemplateSummary'
+
+  /research/templates/{id}:
+    get:
+      tags: [Research]
+      summary: Get full result for a research template
+      description: >
+        Executes the given research template and returns a full result object
+        (table rows for "template" type or highlight blocks for "brief" type).
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Template identifier (e.g. "low-pay-gap").
+      responses:
+        '200':
+          description: Research template result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchTemplateResult'
+        '404':
+          description: Template not found
+
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          example: country
+        iso3:
+          type: string
+          example: SWE
+        name:
+          type: string
+          example: Sweden
+        region:
+          type: string
+          example: Europe
+        income_group:
+          type: string
+          example: High income
+        coverage_score:
+          type: number
+          format: float
+        freshness_score:
+          type: number
+          format: float
+
+    MeasurementUnit:
+      type: object
+      properties:
+        code:
+          type: string
+          example: PCT
+        name:
+          type: string
+          example: Percent
+        symbol:
+          type: string
+          example: '%'
+
+    DataSourceSummary:
+      type: object
+      properties:
+        code:
+          type: string
+          example: UNODC
+        name:
+          type: string
+          example: UNODC Homicide / Femicide Data
+        url:
+          type: string
+          nullable: true
+
+    Indicator:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+          example: WBL_INDEX
+        name:
+          type: string
+          example: Women, Business and the Law Index
+        description:
+          type: string
+        higher_is_better:
+          type: boolean
+        domain:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            name:
+              type: string
+        unit:
+          $ref: '#/components/schemas/MeasurementUnit'
+        source:
+          $ref: '#/components/schemas/DataSourceSummary'
+
+    Observation:
+      type: object
+      properties:
+        id:
+          type: integer
+        year:
+          type: integer
+        value:
+          type: number
+        note:
+          type: string
+          nullable: true
+        location:
+          $ref: '#/components/schemas/Location'
+        unit:
+          $ref: '#/components/schemas/MeasurementUnit'
+        gender:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+              example: FEMALE
+            label:
+              type: string
+        ageGroup:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            label:
+              type: string
+        childrenCount:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            label:
+              type: string
+        householdType:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            label:
+              type: string
+        status:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            label:
+              type: string
+
+    PolicyRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        year:
+          type: integer
+        form_of_violence:
+          type: string
+        measure_type:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        source_url:
+          type: string
+          nullable: true
+        location:
+          $ref: '#/components/schemas/Location'
+        source:
+          $ref: '#/components/schemas/DataSourceSummary'
+
+    ResearchTemplateSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          example: low-pay-gap
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          example: template
+        topic:
+          type: string
+          example: Economic Participation
+        years:
+          type: string
+          example: 2023–2024
+        criteria:
+          type: array
+          items:
+            type: string
+        lastUpdated:
+          type: string
+          example: '2024'
+        sources:
+          type: array
+          items:
+            type: string
+
+    TemplateResultRow:
+      type: object
+      properties:
+        country:
+          type: string
+        region:
+          type: string
+        year:
+          type: string
+        values:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: number
+              - type: string
+        meetsAllCriteria:
+          type: boolean
+
+    ResearchTemplateResult:
+      type: object
+      description: >
+        Full result of a research template. For "template" type
+        contains a data table (results[]). For "brief" type contains
+        narrative fields and highlight groups.
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [template, brief, release, method]
+        topic:
+          type: string
+        years:
+          type: string
+        criteria:
+          type: array
+          items:
+            type: string
+        lastUpdated:
+          type: string
+        sources:
+          type: array
+          items:
+            type: string
+        # для type = "template"
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateResultRow'
+        # для type = "brief"
+        keyFindings:
+          type: array
+          items:
+            type: string
+          nullable: true
+        leaderCountries:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              femicideRate:
+                type: string
+              measuresCount:
+                type: integer
+        gapCountries:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              femicideRate:
+                type: string
+              measuresCount:
+                type: integer
+        contentWarning:
+          type: string
+          nullable: true
+
