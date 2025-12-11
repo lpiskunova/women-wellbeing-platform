@@ -6,11 +6,11 @@ services:
     container_name: women-wellbeing-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}              # DB name from host .env
+      POSTGRES_USER: ${POSTGRES_USER}          # DB user from host .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # DB password from host .env
     ports:
-      - "5433:5432"
+      - "5433:5432"                            # host:container → expose Postgres on localhost:5433
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./backend/db:/docker-entrypoint-initdb.d:ro
@@ -20,7 +20,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - backend_net
+      - backend_net                            # shared network with other services
 
   backend:
     build:
@@ -30,17 +30,17 @@ services:
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy             # wait until Postgres is healthy
       redis:
-        condition: service_healthy
+        condition: service_healthy             # wait until Redis is healthy
     env_file:
       - ./backend/.env.docker
     ports:
-      - "4000:4000"
+      - "4000:4000"                            # expose API on localhost:4000
     networks:
       - backend_net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]   # liveness check
       interval: 30s
       timeout: 5s
       retries: 3
@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
     command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
     ports:
-      - "6379:6379"
+      - "6379:6379"                            # expose Redis on localhost:6379
     volumes:
       - redis_data:/data
     healthcheck:
@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yml
     ports:
-      - "3100:3100"
+      - "3100:3100"                           # Loki HTTP API on localhost:3100
     volumes:
       - ./infra/loki-config.yaml:/etc/loki/local-config.yml:ro
       - loki_data:/loki
@@ -82,13 +82,13 @@ services:
     container_name: grafana
     restart: unless-stopped
     depends_on:
-      - loki
+      - loki                                  # needs Loki as data source
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_USER=admin          # demo admin user
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_SERVER_HTTP_PORT=3000
     ports:
-      - "3000:3000"
+      - "3000:3000"                           # Grafana UI on localhost:3000
     networks:
       - backend_net
     volumes:
@@ -103,5 +103,5 @@ volumes:
 
 networks:
   backend_net:
-    driver: bridge
+    driver: bridge                            # shared bridge network for all services
 

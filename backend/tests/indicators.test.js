@@ -59,7 +59,7 @@ describe('Indicators API', () => {
       .get('/api/indicators')
       .query({
         q: 'WBL',
-        domain: 'LAW_INST', // домен для WBL_* индикаторов
+        domain: 'LAW_INST',
         limit: 50,
         offset: 0,
       });

@@ -39,7 +39,6 @@ describe('Locations API', () => {
     expect(res.body).toHaveProperty('items');
     expect(Array.isArray(res.body.items)).toBe(true);
 
-    // элементы могут быть пустыми, но если что-то есть – регион должен совпадать
     if (res.body.items.length > 0) {
       for (const loc of res.body.items) {
         expect(loc).toHaveProperty('region');

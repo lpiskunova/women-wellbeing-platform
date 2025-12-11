@@ -58,26 +58,3 @@ describe('Policies API', () => {
     }
   });
 });
-
-
-
-// require('dotenv').config();
-// const request = require('supertest');
-// const app = require('../app');
-
-// describe('Policies API', () => {
-//   it('GET /api/policies returns a list of measures/policies', async () => {
-//     const res = await request(app).get('/api/policies');
-
-//     expect(res.statusCode).toBe(200);
-//     expect(res.body).toHaveProperty('items');
-//     expect(Array.isArray(res.body.items)).toBe(true);
-
-//     if (res.body.items.length > 0) {
-//       const item = res.body.items[0];
-//       expect(item).toHaveProperty('year');
-//       expect(item).toHaveProperty('title');
-//       expect(item).toHaveProperty('country');
-//     }
-//   });
-// });

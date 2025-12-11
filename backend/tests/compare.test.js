@@ -48,34 +48,3 @@ describe('Compare API', () => {
       expect(res.statusCode).toBe(400);
     });
 });  
-
-
-
-// require('dotenv').config();
-// const request = require('supertest');
-// const app = require('../app');
-
-// jest.setTimeout(30000);
-
-// describe('Compare API', () => {
-//   it('GET /api/compare compares several countries by indicator and year', async () => {
-//     const year = 2023;
-
-//     const res = await request(app).get(
-//       `/api/compare?indicatorCode=WBL_INDEX&year=${year}&locations=FRA,AFG`
-//     );
-
-//     expect(res.statusCode).toBe(200);
-
-//     expect(res.body).toHaveProperty('indicator');
-//     expect(res.body.indicator).toHaveProperty('code', 'WBL_INDEX');
-//     expect(res.body.indicator).toHaveProperty('year', year);
-//     expect(res.body).toHaveProperty('items');
-//     expect(Array.isArray(res.body.items)).toBe(true);
-//     expect(res.body.items.length).toBeGreaterThan(0);
-
-//     const countries = res.body.items.map((i) => i.location.iso3);
-//     expect(countries).toContain('FRA');
-//     expect(countries).toContain('AFG');
-//   });
-// });
