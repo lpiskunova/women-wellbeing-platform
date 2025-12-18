@@ -1,0 +1,25 @@
+.banner {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+  }
+  
+  .icon { margin-top: 2px; color: #f59e0b; }
+  .text { margin: 0; line-height: 1.5; color: var(--foreground); font-size: 14px; }
+  
+  .close {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--muted-foreground);
+  }
+  .close:hover { background: var(--accent); color: var(--foreground); }
+  

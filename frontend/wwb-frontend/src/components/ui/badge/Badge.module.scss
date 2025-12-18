@@ -1,0 +1,20 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 0;
+  }
+  
+  .default {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  
+  .subtle {
+    background: transparent;
+    color: var(--muted-foreground);
+  }
+  

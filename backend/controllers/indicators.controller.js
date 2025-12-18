@@ -34,7 +34,7 @@ class IndicatorsController {
         code: row.code,
         name: row.name,
         description: row.description,
-        higher_is_better: row.higher_is_better,
+        higherIsBetter: row.higher_is_better,
         domain: {
           code: row.domain_code,
           name: row.domain_name,
@@ -49,6 +49,8 @@ class IndicatorsController {
           name: row.source_name,
           url: row.source_url,
         },
+        latestYear: row.latest_year ?? null,
+        coverageCount: row.coverage_count ?? 0,
       }));
 
       res.status(200).json({
@@ -77,7 +79,7 @@ class IndicatorsController {
         code: data.code,
         name: data.name,
         description: data.description,
-        higher_is_better: data.higher_is_better,
+        higherIsBetter: data.higher_is_better,
         domain: {
           code: data.domain_code,
           name: data.domain_name,
@@ -92,6 +94,8 @@ class IndicatorsController {
           name: data.source_name,
           url: data.source_url,
         },
+        latestYear: data.latest_year ?? null,
+        coverageCount: data.coverage_count ?? 0,
       };
 
       res.status(200).json(indicator);

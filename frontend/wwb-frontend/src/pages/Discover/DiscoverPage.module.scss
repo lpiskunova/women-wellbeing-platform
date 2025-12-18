@@ -1,0 +1,381 @@
+.page {
+    min-height: 100vh;
+    padding: 48px 0;
+    background: linear-gradient(180deg, rgba(250, 245, 255, 0.7) 0%, #ffffff 55%);
+  }
+  
+  .hero {
+    margin-bottom: 28px;
+  }
+  
+  .h1 {
+    margin: 0 0 10px;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+  
+  .subtitle {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+    max-width: 860px;
+  }
+  
+  .controlsCard {
+    border-color: rgba(216, 180, 254, 0.55);
+    margin-bottom: 18px;
+  }
+  
+  .controlsContent {
+    padding: 22px;
+  }
+  
+  .controlsStack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .controlsRow {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  .searchField {
+    position: relative;
+    flex: 1 1 420px;
+    min-width: 260px;
+  }
+  
+  .searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+  
+  .searchInput {
+    padding-left: 40px !important;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .controlsCard {
+    border-color: rgba(216, 180, 254, 0.55);
+    margin-bottom: 18px;
+    overflow: visible;
+    position: relative;
+    z-index: 5;
+  }
+  
+  .controlsContent {
+    overflow: visible;
+  }
+
+  .sortSelect {
+    display: inline-flex;
+  }
+  
+  .sortTrigger {
+    height: 40px !important;
+    min-width: 220px;
+    border-radius: 12px !important;
+    padding: 0 14px !important;
+  }
+
+  .chevron {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+    color: var(--muted-foreground);
+  }
+  
+  .select:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+  }
+  
+  .filtersBtn {
+    gap: 8px;
+  }
+  
+  .filtersBtnActive {
+    border-color: rgba(139, 92, 246, 0.9);
+    background: rgba(139, 92, 246, 0.08);
+    color: var(--primary);
+  }
+  
+  .filtersCount {
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(139, 92, 246, 0.12);
+    color: rgba(91, 33, 182, 1);
+  }
+  
+  .filtersPanel {
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .filtersTitle {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  
+  .filtersGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+  }
+  
+  @media (min-width: 768px) {
+    .filtersGrid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  
+  .clearBtn {
+    margin-top: 14px;
+    color: var(--primary);
+  }
+  
+  .resultsRow {
+    margin: 10px 0 14px;
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .resultsPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--muted-foreground);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  
+    strong {
+      color: var(--foreground);
+      font-weight: 700;
+    }
+  }
+  
+  .resultsPillActive {
+    border-color: rgba(216, 180, 254, 0.65);
+    background: rgba(250, 245, 255, 0.75);
+    color: rgba(91, 33, 182, 1);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .indicatorCard {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(216, 180, 254, 0.55);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .indicatorCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(17, 24, 39, 0.1);
+  }
+  
+  .topBar {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f472b6, #a855f7, #fb923c);
+  }
+  
+  .cardHeader {
+    padding: 18px 22px 14px;
+  }
+  
+  .headerRow {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  @media (min-width: 768px) {
+    .headerRow {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+  }
+  
+  .left {
+    flex: 1;
+  }
+  
+  .titleRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .titleLink {
+    color: var(--foreground);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  
+  .titleLink:hover {
+    color: var(--primary);
+  }
+  
+  .domainBadge {
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    padding: 4px 10px;
+  }
+  
+  .domainBadgeDesktop {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    .domainBadgeDesktop {
+      display: inline-flex;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+  }
+  
+  .domain_rights { background: #8b5cf6; }
+  .domain_safety { background: #ef4444; }
+  .domain_economy { background: #10b981; }
+  .domain_education { background: #3b82f6; }
+  .domain_health { background: #22c55e; }
+  .domain_representation { background: #f97316; }
+  .domain_other { background: rgba(100, 116, 139, 1); }
+  
+  .polarityRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .polarityPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  .higher {
+    background: rgba(16, 185, 129, 0.12);
+    color: rgba(4, 120, 87, 1);
+  }
+  
+  .lower {
+    background: rgba(244, 63, 94, 0.12);
+    color: rgba(190, 18, 60, 1);
+  }
+  
+  .updatedText {
+    font-size: 13px;
+    color: var(--muted-foreground);
+  }
+  
+  .updatedLabel {
+    font-weight: 700;
+    color: rgba(55, 65, 81, 1);
+  }
+  
+  .desc {
+    color: rgba(55, 65, 81, 1);
+    line-height: 1.6;
+  }
+  
+  .cardFooter {
+    padding: 0 22px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .chip {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    background: rgba(0, 0, 0, 0.03);
+  }
+  
+  .chipLabel {
+    font-weight: 800;
+    color: rgba(55, 65, 81, 1);
+  }
+  
+  .viewBtn {
+    margin-left: auto;
+    color: rgba(126, 34, 206, 1);
+  }
+  
+  .skeletonCard {
+    position: relative;
+    height: 150px;
+    border-color: rgba(216, 180, 254, 0.35);
+  }
+  
+  .errorCard {
+    border-color: rgba(239, 68, 68, 0.35);
+  }
+  
+  .emptyCard {
+    border-color: rgba(216, 180, 254, 0.35);
+  }
+  
+  .emptyContent {
+    padding: 42px 18px;
+    text-align: center;
+  }
+  
+  .emptyText {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  
+  .emptyBtn {
+    margin-top: 12px;
+  }
+  

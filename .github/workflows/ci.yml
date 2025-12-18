@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      DB_HOST: localhost
+      DB_PORT: 5433
+      DB_NAME: ${{ secrets.POSTGRES_DB }}
+      DB_USER: ${{ secrets.POSTGRES_USER }}
+      DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+
+      VITE_API_BASE_URL: http://localhost:4000/api
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/wwb-frontend/package-lock.json
+
+      - name: Create .env.ci for docker compose
+        run: |
+          cat > .env.ci <<'EOF'
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          EOF
+
+      - name: Start db + redis
+        run: |
+          docker compose --env-file .env.ci up -d db redis
+          docker compose ps
+
+      - name: Wait for Postgres
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          for i in {1..60}; do
+            docker compose exec -T db sh -lc 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"' >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          echo "Postgres did not become ready in time"
+          docker compose logs db
+          exit 1
+
+      - name: Wait for Redis
+        run: |
+          echo "Waiting for Redis..."
+          for i in {1..30}; do
+            docker compose exec -T redis sh -lc 'redis-cli ping' | grep -q PONG && exit 0
+            sleep 1
+          done
+          echo "Redis did not become ready in time"
+          docker compose logs redis
+          exit 1
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: backend
+        run: npm test
+
+      - name: Install frontend deps
+        working-directory: frontend/wwb-frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend/wwb-frontend
+        run: npm test
+
+      - name: Upload coverage artifacts (if exist)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            backend/coverage
+            frontend/wwb-frontend/coverage
+          if-no-files-found: ignore
+
+      - name: Stop containers
+        if: always()
+        run: |
+          docker compose --env-file .env.ci down -v
+

@@ -1,0 +1,163 @@
+.page {
+    min-height: 100vh;
+    padding: 48px 0;
+    background: #f3faf8;
+  }
+  
+  .inner {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  
+  .header {
+    margin-bottom: 18px;
+  }
+  
+  .title {
+    margin: 0 0 8px;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--foreground);
+  }
+  
+  .subtitle {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+    max-width: 780px;
+  }
+  
+  .searchRow {
+    margin: 18px 0 22px;
+    max-width: 360px;
+    position: relative;
+  }
+  
+  .searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+  
+  .searchInput {
+    padding-left: 36px;
+  }
+  
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  .card {
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    background: var(--card);
+  }
+  
+  .cardHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .topRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  
+  .cardTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--foreground);
+  }
+  
+  .desc {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted-foreground);
+    max-width: 760px;
+  }
+  
+  .orgBadge {
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    background: transparent;
+    color: var(--foreground);
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  
+  .metaGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 26px;
+    margin-top: 2px;
+    margin-bottom: 14px;
+  }
+  
+  .metaLabel {
+    margin: 0 0 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  
+  .metaValue {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted-foreground);
+  }
+  
+  .licenseLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgb(124, 58, 237);
+    text-decoration: none;
+  }
+  
+  .licenseLink:hover {
+    text-decoration: underline;
+  }
+  
+  .visitBtn {
+    border: 1px solid rgba(139, 92, 246, 0.18);
+  }
+  
+  .visitLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .empty {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--muted-foreground);
+  }
+  
+  @media (max-width: 640px) {
+    .title {
+      font-size: 32px;
+    }
+  
+    .metaGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+  

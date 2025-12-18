@@ -18,4 +18,6 @@ const router = express.Router();
  */
 router.get('/', ObservationsController.getObservations);
 
+router.get('/rankings', ObservationsController.getRankings);
+
 module.exports = router;

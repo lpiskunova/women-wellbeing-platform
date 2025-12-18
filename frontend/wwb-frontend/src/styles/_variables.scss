@@ -1,0 +1,19 @@
+:root {
+    --bg: #f9fafb;
+    --text: #111827;
+  
+    --primary: #8b5cf6;
+    --primary-contrast: #ffffff;
+  
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+  
+  [data-theme='dark'] {
+    --bg: #020617;
+    --text: #f9fafb;
+  
+    --card: #0f172a;
+    --border: #334155;
+  }
+  

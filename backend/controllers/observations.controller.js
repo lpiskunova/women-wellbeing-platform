@@ -57,6 +57,34 @@ class ObservationsController {
       next(err);
     }
   }
+
+    /**
+     * GET /observations/rankings
+     * ?indicatorCode=WBL_INDEX&limit=50
+     */
+    static async getRankings(req, res, next) {
+      try {
+        const { indicatorCode, limit = '200' } = req.query;
+  
+        if (!indicatorCode) {
+          throw ApiError.badRequest('indicatorCode is required');
+        }
+  
+        const parsedLimit = Number.parseInt(limit, 10);
+        if (Number.isNaN(parsedLimit)) {
+          throw ApiError.badRequest('limit must be a number');
+        }
+  
+        const data = await ObservationService.getIndicatorRankings({
+          indicatorCode,
+          limit: parsedLimit,
+        });
+  
+        res.status(200).json(data);
+      } catch (err) {
+        next(err);
+      }
+    }  
 }
 
 module.exports = ObservationsController;

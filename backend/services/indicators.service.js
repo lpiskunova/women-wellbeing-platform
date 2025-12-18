@@ -37,11 +37,21 @@ class IndicatorService {
         mu.symbol,
         ds.code AS source_code,
         ds.name AS source_name,
-        ds.url  AS source_url
+        ds.url  AS source_url,
+        stats.latest_year,
+        stats.coverage_count
       FROM indicators i
       JOIN indicator_domains   d  ON d.id  = i.domain_id
       JOIN measurement_units   mu ON mu.id = i.unit_id
       JOIN data_sources        ds ON ds.id = i.data_source_id
+      LEFT JOIN (
+        SELECT
+          indicator_id,
+          MAX(year)                   AS latest_year,
+          COUNT(DISTINCT location_id) AS coverage_count
+        FROM indicator_observations
+        GROUP BY indicator_id
+      ) stats ON stats.indicator_id = i.id
       WHERE ${whereSql}
       ORDER BY i.code
       LIMIT :limit OFFSET :offset
