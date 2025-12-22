@@ -1,0 +1,96 @@
+@use '@/styles/mixins' as mixins;
+
+.panelCard {
+  border-color: rgba(216, 180, 254, 0.45);
+  background-color: var(--card);
+  margin-bottom: var(--space-md);
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+}
+
+.panelHeader {
+  @include mixins.flex-row(var(--space-md), center, space-between, wrap);
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+.panelSubtitle {
+  margin-top: 0.25rem;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}
+
+.actions {
+  @include mixins.flex-row(var(--space-xs), center, flex-start, wrap);
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--font-size-sm);
+}
+
+.panelBody {
+  padding: 0 var(--space-md) var(--space-md);
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  overflow: visible;
+}
+
+.badges {
+  @include mixins.flex-row(var(--space-xs), center, flex-start, wrap);
+  margin: var(--space-sm) 0 var(--space-sm);
+}
+
+.badge {
+  @include mixins.flex-row(var(--space-2xs), center);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.badgeRemove {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.7;
+}
+
+.badgeRemove:hover {
+  opacity: 1;
+}
+
+.addRow {
+  @include mixins.flex-row(var(--space-sm), center, flex-start, wrap);
+}
+
+.addSelect {
+  width: min(20rem, 100%);
+  position: relative;
+}
+
+.addTrigger {
+  height: 2.5rem !important;
+  width: 100% !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0 0.875rem !important;
+}
+
+.addHint {
+  @include mixins.flex-row(var(--space-2xs), center);
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
+}

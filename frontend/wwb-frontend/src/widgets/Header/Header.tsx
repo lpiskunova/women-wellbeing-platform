@@ -1,6 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Globe, Menu, Moon, Search, Sun, X } from 'lucide-react'
+
+import { cn } from '@/shared/lib/cn'
+import { NAV_ITEMS, type HeaderLanguage, DEFAULT_LANGUAGE } from './header.constants'
+
 import styles from './Header.module.scss'
 
 type Theme = 'light' | 'dark'
@@ -8,7 +12,7 @@ type Theme = 'light' | 'dark'
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [languageOpen, setLanguageOpen] = useState(false)
-  const [language, setLanguage] = useState<'en' | 'ru'>('en')
+  const [language, setLanguage] = useState<HeaderLanguage>(DEFAULT_LANGUAGE)
   const [searchQuery, setSearchQuery] = useState('')
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'light'
@@ -19,22 +23,15 @@ export function Header() {
   const langRef = useRef<HTMLDivElement | null>(null)
   const isDark = theme === 'dark'
 
-  const navItems = useMemo(
-    () => [
-      { label: language === 'en' ? 'Home' : 'Главная', href: '/' },
-      { label: language === 'en' ? 'Discover' : 'Обзор', href: '/discover' },
-      { label: language === 'en' ? 'Countries' : 'Страны', href: '/countries' },
-      { label: language === 'en' ? 'Compare' : 'Сравнить', href: '/compare' },
-      { label: language === 'en' ? 'Research' : 'Исследования', href: '/research' },
-      { label: language === 'en' ? 'Docs' : 'Документы', href: '/docs' },
-    ],
-    [language],
-  )
+  const navItems = NAV_ITEMS[language]
 
   useEffect(() => {
     const root = document.documentElement
     root.classList.toggle('dark', theme === 'dark')
-    window.localStorage.setItem('wwb-theme', theme)
+
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('wwb-theme', theme)
+    }
   }, [theme])
 
   const toggleTheme = () => {
@@ -43,10 +40,14 @@ export function Header() {
 
   useEffect(() => {
     if (!languageOpen) return
+
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as Node
-      if (langRef.current && !langRef.current.contains(target)) setLanguageOpen(false)
+      if (langRef.current && !langRef.current.contains(target)) {
+        setLanguageOpen(false)
+      }
     }
+
     document.addEventListener('mousedown', onDocClick)
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [languageOpen])
@@ -55,10 +56,6 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <a href="#main-content" className={styles.skipLink}>
-        {language === 'en' ? 'Skip to main content' : 'Перейти к основному содержанию'}
-      </a>
-
       <div className={styles.topBar} />
 
       <div className={styles.container}>
@@ -80,9 +77,7 @@ export function Header() {
                 key={item.href}
                 to={item.href}
                 end={item.href === '/'}
-                className={({ isActive }) =>
-                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-                }
+                className={({ isActive }) => cn(styles.navLink, isActive && styles.navLinkActive)}
                 onClick={onNavClick}
               >
                 {item.label}
@@ -123,9 +118,7 @@ export function Header() {
                 <div className={styles.langMenu} role="menu">
                   <button
                     type="button"
-                    className={`${styles.langItem} ${
-                      language === 'en' ? styles.langItemActive : ''
-                    }`}
+                    className={cn(styles.langItem, language === 'en' && styles.langItemActive)}
                     onClick={() => {
                       setLanguage('en')
                       setLanguageOpen(false)
@@ -133,18 +126,14 @@ export function Header() {
                     role="menuitem"
                   >
                     <span
-                      className={`${styles.langDot} ${
-                        language === 'en' ? styles.langDotActive : ''
-                      }`}
+                      className={cn(styles.langDot, language === 'en' && styles.langDotActive)}
                     />
                     English
                   </button>
 
                   <button
                     type="button"
-                    className={`${styles.langItem} ${
-                      language === 'ru' ? styles.langItemActive : ''
-                    }`}
+                    className={cn(styles.langItem, language === 'ru' && styles.langItemActive)}
                     onClick={() => {
                       setLanguage('ru')
                       setLanguageOpen(false)
@@ -152,9 +141,7 @@ export function Header() {
                     role="menuitem"
                   >
                     <span
-                      className={`${styles.langDot} ${
-                        language === 'ru' ? styles.langDotActive : ''
-                      }`}
+                      className={cn(styles.langDot, language === 'ru' && styles.langDotActive)}
                     />
                     Русский
                   </button>
@@ -164,7 +151,7 @@ export function Header() {
 
             <button
               type="button"
-              className={`${styles.iconBtn} ${styles.themeBtn}`}
+              className={cn(styles.iconBtn, styles.themeBtn)}
               onClick={toggleTheme}
               aria-label={
                 language === 'en'
@@ -172,8 +159,8 @@ export function Header() {
                     ? 'Activate light theme'
                     : 'Activate dark theme'
                   : isDark
-                  ? 'Включить светлую тему'
-                  : 'Включить тёмную тему'
+                    ? 'Включить светлую тему'
+                    : 'Включить тёмную тему'
               }
             >
               {isDark ? <Moon size={16} /> : <Sun size={16} />}
@@ -181,7 +168,7 @@ export function Header() {
 
             <button
               type="button"
-              className={`${styles.iconBtn} ${styles.mobileBtn}`}
+              className={cn(styles.iconBtn, styles.mobileBtn)}
               onClick={() => setMobileMenuOpen((v) => !v)}
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
@@ -210,7 +197,7 @@ export function Header() {
                   to={item.href}
                   end={item.href === '/'}
                   className={({ isActive }) =>
-                    `${styles.mobileLink} ${isActive ? styles.mobileLinkActive : ''}`
+                    cn(styles.mobileLink, isActive && styles.mobileLinkActive)
                   }
                   onClick={onNavClick}
                 >

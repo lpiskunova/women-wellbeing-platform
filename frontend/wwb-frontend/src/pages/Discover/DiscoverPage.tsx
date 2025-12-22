@@ -1,30 +1,40 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Search,
-  Filter,
-  ArrowUpDown,
-  TrendingUp,
-  TrendingDown,
-  RotateCcw,
-} from 'lucide-react'
+import { Search, Filter, ArrowUpDown, TrendingUp, TrendingDown, RotateCcw } from 'lucide-react'
 import { Select } from '@/components/ui/select/Select'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card/Card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card/Card'
 import { Button } from '@/components/ui/button/Button'
 import { Badge } from '@/components/ui/badge/Badge'
 import { Input } from '@/components/ui/input/Input'
 import { Checkbox } from '@/components/ui/checkbox/Checkbox'
-
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks'
 import { fetchIndicators } from '@/app/store/indicatorsSlice'
-
 import type { Indicator, NamedRef } from '@/entities/indicator/indicator.interfaces'
-import { getRefName, getIndicatorPolarity, formatCoverage } from '@/entities/indicator/indicator.utils'
-import { DOMAIN_LABELS, DOMAIN_VARIANTS, SORT_OPTIONS, type SortKey } from './entities/discover.constants'
+import {
+  getRefName,
+  getIndicatorPolarity,
+  formatCoverage,
+} from '@/entities/indicator/indicator.utils'
+import {
+  DOMAIN_LABELS,
+  DOMAIN_VARIANTS,
+  SORT_OPTIONS,
+  type SortKey,
+  type DomainVariant,
+} from './entities/discover.constants'
 import styles from './DiscoverPage.module.scss'
 
-function normalize(s: string) {
-  return s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
+function normalize(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
 }
 
 function getRefCode(ref: NamedRef | undefined): string {
@@ -33,54 +43,62 @@ function getRefCode(ref: NamedRef | undefined): string {
   return ref.code ?? ''
 }
 
-function getDomainKey(ind: Indicator): string {
-  const code = getRefCode(ind.domain)
+function getDomainKey(indicator: Indicator): string {
+  const code = getRefCode(indicator.domain)
   if (code) return code
-  const name = getRefName(ind.domain)
+
+  const name = getRefName(indicator.domain)
   return name ? `name:${normalize(name)}` : ''
 }
 
-function getDomainLabel(ind: Indicator): string {
-  const code = getRefCode(ind.domain)
+function getDomainLabel(indicator: Indicator): string {
+  const code = getRefCode(indicator.domain)
   if (code && DOMAIN_LABELS[code]) return DOMAIN_LABELS[code]
 
-  const name = getRefName(ind.domain)
-  return name
+  return getRefName(indicator.domain)
 }
 
-function getDomainVariant(ind: Indicator): string {
-  const code = getRefCode(ind.domain)
-  return (code && DOMAIN_VARIANTS[code]) ? DOMAIN_VARIANTS[code] : 'other'
+function getDomainVariant(indicator: Indicator): DomainVariant {
+  const code = getRefCode(indicator.domain)
+  const variant = code ? DOMAIN_VARIANTS[code] : undefined
+  return variant ?? 'other'
 }
 
-function formatUnit(ind: Indicator): string {
-  const u = getRefName(ind.unit)
-  return u || '—'
+function formatUnit(indicator: Indicator): string {
+  const unit = getRefName(indicator.unit)
+  return unit || '—'
 }
 
-function formatSource(ind: Indicator): string {
-  const s = getRefName(ind.source)
-  return s || '—'
+function formatSource(indicator: Indicator): string {
+  const source = getRefName(indicator.source)
+  return source || '—'
 }
 
-function getLastUpdated(ind: Indicator): string {
-  if (typeof ind.latestYear === 'number') return String(ind.latestYear)
-  if (typeof ind.updateYear === 'number') return String(ind.updateYear)
+function getLastUpdated(indicator: Indicator): string {
+  if (typeof indicator.latestYear === 'number') return String(indicator.latestYear)
+  if (typeof indicator.updateYear === 'number') return String(indicator.updateYear)
 
-  if (ind.lastUpdated) {
-    const d = new Date(ind.lastUpdated)
-    if (!Number.isNaN(d.getTime())) return String(d.getFullYear())
+  if (indicator.lastUpdated) {
+    const date = new Date(indicator.lastUpdated)
+    if (!Number.isNaN(date.getTime())) return String(date.getFullYear())
   }
+
   return '—'
 }
 
-function IndicatorCard({ ind }: { ind: Indicator }) {
+interface IndicatorCardProps {
+  ind: Indicator
+}
+
+function IndicatorCard({ ind }: IndicatorCardProps) {
   const polarity = getIndicatorPolarity(ind)
   const isHigherBetter = polarity === 'HIGHER_IS_BETTER'
   const isLowerBetter = polarity === 'LOWER_IS_BETTER'
 
-  const dLabel = getDomainLabel(ind)
-  const dVar = getDomainVariant(ind)
+  const domainLabel = getDomainLabel(ind)
+  const domainVariant = getDomainVariant(ind)
+  const domainClassName =
+    styles[`domain_${domainVariant}` as keyof typeof styles] ?? styles.domain_other
 
   const coverage = formatCoverage(ind)
   const lastUpdated = getLastUpdated(ind)
@@ -101,6 +119,14 @@ function IndicatorCard({ ind }: { ind: Indicator }) {
                   {ind.name}
                 </Link>
               </CardTitle>
+
+              {domainLabel ? (
+                <Badge
+                  className={`${styles.domainBadge} ${styles.domainBadgeMobile} ${domainClassName}`}
+                >
+                  {domainLabel}
+                </Badge>
+              ) : null}
             </div>
 
             <div className={styles.polarityRow}>
@@ -110,11 +136,17 @@ function IndicatorCard({ ind }: { ind: Indicator }) {
                   isHigherBetter ? styles.higher : '',
                   isLowerBetter ? styles.lower : '',
                   !isHigherBetter && !isLowerBetter ? styles.neutral : '',
-                ].join(' ')}
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
               >
                 {isHigherBetter ? <TrendingUp size={14} /> : null}
                 {isLowerBetter ? <TrendingDown size={14} /> : null}
-                {isHigherBetter ? 'Higher is better' : isLowerBetter ? 'Lower is better' : 'Polarity: —'}
+                {isHigherBetter
+                  ? 'Higher is better'
+                  : isLowerBetter
+                    ? 'Lower is better'
+                    : 'Polarity: —'}
               </span>
 
               <span className={styles.updatedText}>
@@ -127,9 +159,11 @@ function IndicatorCard({ ind }: { ind: Indicator }) {
             ) : null}
           </div>
 
-          {dLabel ? (
-            <Badge className={`${styles.domainBadge} ${styles[`domain_${dVar}`]}`}>
-              {dLabel}
+          {domainLabel ? (
+            <Badge
+              className={`${styles.domainBadge} ${styles.domainBadgeDesktop} ${domainClassName}`}
+            >
+              {domainLabel}
             </Badge>
           ) : null}
         </div>
@@ -158,7 +192,7 @@ function IndicatorCard({ ind }: { ind: Indicator }) {
 
 export function DiscoverPage() {
   const dispatch = useAppDispatch()
-  const { items, total, status, error } = useAppSelector((s) => s.indicators)
+  const { items, total, status, error } = useAppSelector((state) => state.indicators)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortKey>('name')
@@ -166,14 +200,16 @@ export function DiscoverPage() {
   const [selectedDomains, setSelectedDomains] = useState<string[]>([])
 
   useEffect(() => {
-    if (status === 'idle') dispatch(fetchIndicators())
+    if (status === 'idle') {
+      void dispatch(fetchIndicators())
+    }
   }, [dispatch, status])
 
   const domainOptions = useMemo(() => {
     const map = new Map<string, { key: string; label: string }>()
-    for (const ind of items as Indicator[]) {
-      const key = getDomainKey(ind)
-      const label = getDomainLabel(ind)
+    for (const indicator of items as Indicator[]) {
+      const key = getDomainKey(indicator)
+      const label = getDomainLabel(indicator)
       if (!key || !label) continue
       if (!map.has(key)) map.set(key, { key, label })
     }
@@ -183,29 +219,33 @@ export function DiscoverPage() {
   const hasActiveFilters = searchQuery.trim() !== '' || selectedDomains.length > 0
 
   const filtered = useMemo(() => {
-    const q = normalize(searchQuery)
+    const query = normalize(searchQuery)
     const selected = new Set(selectedDomains)
 
-    let res = items as Indicator[]
+    let result = items as Indicator[]
 
-    if (q) {
-      res = res.filter((i) => normalize(`${i.name} ${i.description ?? ''}`).includes(q))
+    if (query) {
+      result = result.filter((indicator) =>
+        normalize(`${indicator.name} ${indicator.description ?? ''}`).includes(query),
+      )
     }
 
     if (selected.size > 0) {
-      res = res.filter((i) => selected.has(getDomainKey(i)))
+      result = result.filter((indicator) => selected.has(getDomainKey(indicator)))
     }
 
-    const sorted = [...res]
+    const sorted = [...result]
     if (sortBy === 'name') {
       sorted.sort((a, b) => a.name.localeCompare(b.name))
     } else {
       sorted.sort((a, b) => {
-        const aY = Number(getLastUpdated(a)) || 0
-        const bY = Number(getLastUpdated(b)) || 0
-        return bY - aY || a.name.localeCompare(b.name)
+        const yearA = Number(getLastUpdated(a)) || 0
+        const yearB = Number(getLastUpdated(b)) || 0
+        if (yearA === yearB) return a.name.localeCompare(b.name)
+        return yearB - yearA
       })
     }
+
     return sorted
   }, [items, searchQuery, selectedDomains, sortBy])
 
@@ -232,7 +272,7 @@ export function DiscoverPage() {
                   <Input
                     type="search"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder="Search indicators by name or description..."
                     className={styles.searchInput}
                   />
@@ -246,11 +286,12 @@ export function DiscoverPage() {
                     ariaLabel="Sort indicators"
                     startIcon={<ArrowUpDown size={16} />}
                     triggerClassName={styles.sortTrigger}
-                    />
+                  />
 
                   <Button
+                    type="button"
                     variant="outline"
-                    onClick={() => setShowFilters((v) => !v)}
+                    onClick={() => setShowFilters((prev) => !prev)}
                     className={`${styles.filtersBtn} ${
                       showFilters || selectedDomains.length > 0 ? styles.filtersBtnActive : ''
                     }`}
@@ -269,17 +310,21 @@ export function DiscoverPage() {
                   <h3 className={styles.filtersTitle}>Filter by Domain</h3>
 
                   <div className={styles.filtersGrid}>
-                    {domainOptions.map((d) => {
-                      const checked = selectedDomains.includes(d.key)
+                    {domainOptions.map((domain) => {
+                      const checked = selectedDomains.includes(domain.key)
                       return (
                         <Checkbox
-                          key={d.key}
-                          label={d.label}
+                          key={domain.key}
+                          label={domain.label}
                           checked={checked}
-                          onChange={(next) => {
+                          onChange={(nextChecked) => {
                             setSelectedDomains((prev) => {
-                              if (next && !prev.includes(d.key)) return [...prev, d.key]
-                              if (!next && prev.includes(d.key)) return prev.filter((x) => x !== d.key)
+                              if (nextChecked && !prev.includes(domain.key)) {
+                                return [...prev, domain.key]
+                              }
+                              if (!nextChecked && prev.includes(domain.key)) {
+                                return prev.filter((key) => key !== domain.key)
+                              }
                               return prev
                             })
                           }}
@@ -290,6 +335,7 @@ export function DiscoverPage() {
 
                   {selectedDomains.length > 0 ? (
                     <Button
+                      type="button"
                       variant="ghost"
                       size="sm"
                       className={styles.clearBtn}
@@ -306,18 +352,20 @@ export function DiscoverPage() {
         </Card>
 
         <div className={styles.resultsRow}>
-          <div className={`${styles.resultsPill} ${hasActiveFilters ? styles.resultsPillActive : ''}`}>
+          <div
+            className={`${styles.resultsPill} ${hasActiveFilters ? styles.resultsPillActive : ''}`}
+          >
             <Search size={14} />
-            <span>
-              Showing <strong>{showing}</strong> of {all} indicators
+            <span className={styles.resultsText}>
+              Showing {showing} of {all} indicators
             </span>
           </div>
         </div>
 
         <div className={styles.list}>
           {status === 'loading'
-            ? Array.from({ length: 6 }).map((_, idx) => (
-                <Card key={idx} className={styles.skeletonCard}>
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index} className={styles.skeletonCard}>
                   <div className={styles.topBar} />
                 </Card>
               ))
@@ -330,7 +378,9 @@ export function DiscoverPage() {
                 <CardDescription>{error ?? 'Unknown error'}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button onClick={() => dispatch(fetchIndicators())}>Retry</Button>
+                <Button type="button" onClick={() => dispatch(fetchIndicators())}>
+                  Retry
+                </Button>
               </CardContent>
             </Card>
           ) : null}
@@ -338,8 +388,11 @@ export function DiscoverPage() {
           {status === 'succeeded' && filtered.length === 0 ? (
             <Card className={styles.emptyCard}>
               <CardContent className={styles.emptyContent}>
-                <p className={styles.emptyText}>No indicators found matching your search criteria.</p>
+                <p className={styles.emptyText}>
+                  No indicators found matching your search criteria.
+                </p>
                 <Button
+                  type="button"
                   variant="ghost"
                   className={styles.emptyBtn}
                   onClick={() => {
@@ -353,7 +406,9 @@ export function DiscoverPage() {
             </Card>
           ) : null}
 
-          {status === 'succeeded' ? filtered.map((ind) => <IndicatorCard key={ind.code} ind={ind} />) : null}
+          {status === 'succeeded'
+            ? filtered.map((indicator) => <IndicatorCard key={indicator.code} ind={indicator} />)
+            : null}
         </div>
       </div>
     </div>

@@ -1,0 +1,50 @@
+@use '@/styles/mixins' as mixins;
+
+.controlsCard {
+  border-color: rgba(216, 180, 254, 0.55);
+  margin-bottom: var(--space-sm);
+  overflow: visible;
+  position: relative;
+  z-index: 5;
+  background-color: var(--card);
+}
+
+.controlsContent {
+  padding: 1.125rem;
+  overflow: visible;
+}
+
+.controlsRow {
+  @include mixins.flex-row(var(--space-sm), center, flex-start, wrap);
+}
+
+.searchField {
+  position: relative;
+  flex: 1 1 32rem;
+  min-width: 16.25rem;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.searchInput {
+  padding-left: 2.5rem !important;
+}
+
+.selectWrap {
+  display: inline-flex;
+}
+
+.regionTrigger,
+.sortTrigger {
+  height: 2.5rem !important;
+  min-width: 13rem;
+  border-radius: var(--radius-md) !important;
+  padding: 0 0.875rem !important;
+}

@@ -10,6 +10,7 @@ export type NamedRefObject = {
 export type NamedRef = NamedRefObject | string | null
 
 export interface Indicator {
+  id: number
   code: string
   name: string
   description?: string | null
@@ -28,4 +29,3 @@ export interface Indicator {
   coverage?: number | null
   lastUpdated?: string | null
 }
-

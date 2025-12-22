@@ -1,0 +1,37 @@
+.bottomGrid {
+  margin-top: var(--space-md);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+@media (min-width: 768px) {
+  .bottomGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.bottomCard {
+  border-color: rgba(216, 180, 254, 0.55);
+  background-color: var(--card);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bottomCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.08);
+}
+
+.bottomTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.bottomDesc {
+  margin-bottom: 0.75rem;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}

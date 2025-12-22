@@ -1,9 +1,9 @@
+import { env } from '@/shared/config/env'
+
 export const MAX_SELECTED_COUNTRIES = 3
 export const QS_COUNTRIES = 'countries'
 
-export const API_BASE_URL =
-  import.meta?.env?.VITE_API_BASE_URL?.replace(/\/$/, '') ||
-  'http://localhost:4000/api'
+export const API_BASE_URL = env.apiBaseUrl.replace(/\/$/, '')
 
 export const LIMITS = {
   LOCATIONS: 300,
@@ -25,9 +25,5 @@ export const normalizeIso3 = (v: string) => v.trim().toUpperCase()
 
 export const parseCountriesParam = (value: string | null) => {
   if (!value) return []
-  return value
-    .split(',')
-    .map(normalizeIso3)
-    .filter(Boolean)
-    .slice(0, MAX_SELECTED_COUNTRIES)
+  return value.split(',').map(normalizeIso3).filter(Boolean).slice(0, MAX_SELECTED_COUNTRIES)
 }

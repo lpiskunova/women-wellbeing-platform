@@ -55,8 +55,7 @@ export const GLOSSARY: GlossaryItem[] = [
   },
   {
     term: 'IPV (Intimate Partner Violence)',
-    definition:
-      'Physical, sexual, or psychological harm by a current or former partner or spouse.',
+    definition: 'Physical, sexual, or psychological harm by a current or former partner or spouse.',
   },
   {
     term: 'Femicide',

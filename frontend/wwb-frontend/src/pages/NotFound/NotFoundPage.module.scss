@@ -1,94 +1,106 @@
+@use '@/styles/mixins' as mixins;
+
 .page {
-    height: calc(100vh - 72px);
-    padding: 16px;
-    background: linear-gradient(180deg, rgba(124, 58, 237, 0.06), rgba(255, 255, 255, 1));
-  
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .center {
-    width: 100%;
-    max-width: 520px;
-  }
-  
-  
-  .card {
-    width: 100%;
-    background: #fff;
-    border: 1px solid rgba(124, 58, 237, 0.14);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
-    padding: 26px 26px 22px;
-    text-align: center;
-  }
-  
-  .iconWrap {
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    margin: 0 auto 10px;
-    background: rgba(124, 58, 237, 0.10);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .title {
-    margin: 6px 0 6px;
-    font-size: 26px;
-    line-height: 1.2;
-    font-weight: 800;
-    color: #0f172a;
-  }
-  
-  .desc {
-    margin: 0 auto 18px;
-    max-width: 420px;
-    color: rgba(15, 23, 42, 0.65);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  
-  .actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    user-select: none;
-  }
-  
-  .primary {
-    background: #7c3aed;
-    color: #fff;
-    border: 1px solid rgba(124, 58, 237, 0.55);
-  }
-  
-  .primary:hover {
-    background: #6d28d9;
-  }
-  
-  .secondary {
-    background: #fff;
-    color: #0f172a;
-    border: 1px solid rgba(15, 23, 42, 0.15);
-  }
-  
-  .secondary:hover {
-    background: rgba(15, 23, 42, 0.04);
-  }
-  
+  min-height: 100vh;
+  padding: var(--space-3xl) 0 var(--space-3xl);
+  background: linear-gradient(180deg, rgba(250, 245, 255, 0.7) 0%, #ffffff 55%);
+  display: flex;
+  align-items: center;
+}
+
+:global(.dark) .page {
+  background: radial-gradient(
+      circle at top,
+      rgba(148, 163, 184, 0.18) 0,
+      transparent 40%
+    ),
+    #020617;
+}
+
+.center {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.card {
+  width: 100%;
+  background-color: var(--card);
+  border: 1px solid rgba(216, 180, 254, 0.4);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
+  text-align: center;
+}
+
+.iconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  margin: 0 auto var(--space-sm);
+  background: rgba(216, 180, 254, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c3aed;
+}
+
+.title {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+.desc {
+  margin: 0 auto var(--space-md);
+  max-width: 26rem;
+  color: var(--muted-foreground);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.actions {
+  @include mixins.flex-row(var(--space-sm), center, center, wrap);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  height: 2.4rem;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  user-select: none;
+  border: 1px solid transparent;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: rgba(129, 140, 248, 0.6);
+}
+
+.primary:hover {
+  background-color: color-mix(in srgb, var(--primary) 92%, #000 8%);
+}
+
+.secondary {
+  background-color: transparent;
+  color: var(--foreground);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.secondary:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}

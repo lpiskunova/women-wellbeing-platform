@@ -1,163 +1,202 @@
+@use '@/styles/mixins' as mixins;
+
 .page {
-    min-height: 100vh;
-    padding: 48px 0;
-    background: #f3faf8;
-  }
-  
-  .inner {
-    max-width: 980px;
-    margin: 0 auto;
-  }
-  
-  .header {
-    margin-bottom: 18px;
-  }
-  
+  min-height: 100vh;
+  padding-block: var(--space-3xl);
+  background: var(--background);
+}
+
+.inner {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  margin: 0 0 var(--space-xs);
+  font-size: clamp(2rem, 3vw, var(--font-size-display));
+  line-height: 1.1;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 48rem;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.searchRow {
+  margin: var(--space-lg) 0 var(--space-lg);
+  max-width: 24rem;
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-sm);
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.searchInput {
+  padding-left: calc(var(--space-lg) + var(--space-sm));
+  background-color: var(--card);
+  border-color: var(--input);
+  box-shadow: 0 0.0625rem 0.15rem rgba(15, 23, 42, 0.06);
+}
+
+.list {
+  @include mixins.flex-column(var(--space-md));
+}
+
+.card {
+  @include mixins.card(var(--space-lg), var(--space-lg));
+  border-radius: var(--radius-xl);
+}
+
+.cardHeader {
+  padding: 0;
+  margin-bottom: var(--space-sm);
+}
+
+.cardContent {
+  padding: 0;
+}
+
+.cardHeaderTop {
+  @include mixins.flex-row(var(--space-md), flex-start, space-between);
+}
+
+.cardHeaderMain {
+  @include mixins.flex-column(var(--space-xs));
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--foreground);
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  max-width: 46rem;
+}
+
+.orgBadge {
+  align-self: flex-start;
+  border-radius: 999px;
+  padding-inline: var(--space-sm);
+  height: 1.5rem;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md) var(--space-2xl);
+  margin-bottom: var(--space-md);
+}
+
+.metaItem {
+  @include mixins.flex-column(var(--space-2xs));
+}
+
+.metaItem dt,
+.metaItem dd {
+  margin: 0;
+}
+
+.metaLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+}
+
+.metaValue {
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}
+
+.licenseLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--primary);
+}
+
+.licenseLink svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.licenseLink:hover {
+  text-decoration: underline;
+}
+
+.visitBtn {
+  border-radius: var(--radius-md);
+  border-color: var(--border);
+}
+
+.visitLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.empty {
+  text-align: center;
+  padding-block: var(--space-3xl);
+  color: var(--muted-foreground);
+}
+
+.emptyText {
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 40rem) {
   .title {
-    margin: 0 0 8px;
-    font-size: 40px;
-    line-height: 1.15;
-    font-weight: 800;
-    color: var(--foreground);
+    font-size: var(--font-size-2xl);
   }
-  
-  .subtitle {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--muted-foreground);
-    max-width: 780px;
-  }
-  
-  .searchRow {
-    margin: 18px 0 22px;
-    max-width: 360px;
-    position: relative;
-  }
-  
-  .searchIcon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    color: var(--muted-foreground);
-    pointer-events: none;
-  }
-  
-  .searchInput {
-    padding-left: 36px;
-  }
-  
-  .list {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  
-  .card {
-    border: 1px solid rgba(139, 92, 246, 0.12);
-    background: var(--card);
-  }
-  
-  .cardHeader {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .topRow {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 14px;
-  }
-  
-  .cardTitle {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--foreground);
-  }
-  
-  .desc {
-    margin: 6px 0 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--muted-foreground);
-    max-width: 760px;
-  }
-  
-  .orgBadge {
-    border: 1px solid rgba(15, 23, 42, 0.14);
-    background: transparent;
-    color: var(--foreground);
-    height: 22px;
-    padding: 0 8px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  
+
   .metaGrid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 26px;
-    margin-top: 2px;
-    margin-bottom: 14px;
+    grid-template-columns: 1fr;
   }
-  
-  .metaLabel {
-    margin: 0 0 4px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--foreground);
+}
+
+:global(.dark) {
+  .page {
+    background: var(--background);
   }
-  
-  .metaValue {
-    margin: 0;
-    font-size: 13px;
-    color: var(--muted-foreground);
+
+  .searchInput {
+    box-shadow: none;
   }
-  
-  .licenseLink {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: rgb(124, 58, 237);
-    text-decoration: none;
+
+  .orgBadge {
+    background-color: var(--card);
+    border-color: var(--border);
   }
-  
-  .licenseLink:hover {
-    text-decoration: underline;
-  }
-  
-  .visitBtn {
-    border: 1px solid rgba(139, 92, 246, 0.18);
-  }
-  
-  .visitLink {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .empty {
-    text-align: center;
-    padding: 48px 0;
-    color: var(--muted-foreground);
-  }
-  
-  @media (max-width: 640px) {
-    .title {
-      font-size: 32px;
-    }
-  
-    .metaGrid {
-      grid-template-columns: 1fr;
-    }
-  }
-  
+}

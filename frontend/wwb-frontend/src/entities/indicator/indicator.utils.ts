@@ -1,4 +1,4 @@
-import type { Indicator, NamedRef, IndicatorPolarity } from "./indicator.interfaces"
+import type { Indicator, NamedRef, IndicatorPolarity } from './indicator.interfaces'
 
 export function getRefName(ref?: NamedRef): string {
   if (!ref) return ''
@@ -38,22 +38,41 @@ export function getIndicatorUpdatedValue(ind: Indicator): number {
 }
 
 export function formatCoverage(ind: Indicator): string | null {
-    const raw = ind.coverageCount as unknown
-    const c =
-      typeof raw === 'string' ? Number.parseInt(raw, 10) :
-      typeof raw === 'number' ? raw :
-      null
-  
-    if (c != null && Number.isFinite(c) && c > 0) return `${c} countries`
+  const raw = ind.coverageCount as unknown
+  const c =
+    typeof raw === 'string' ? Number.parseInt(raw, 10) : typeof raw === 'number' ? raw : null
 
-    const v = ind.coverage
-    if (typeof v !== 'number' || Number.isNaN(v)) return null
-    const percent = v <= 1 ? v * 100 : v
-    const clamped = Math.max(0, Math.min(100, percent))
-    return `${Math.round(clamped)}%`
-} 
+  if (c != null && Number.isFinite(c) && c > 0) return `${c} countries`
+
+  const v = ind.coverage
+  if (typeof v !== 'number' || Number.isNaN(v)) return null
+  const percent = v <= 1 ? v * 100 : v
+  const clamped = Math.max(0, Math.min(100, percent))
+  return `${Math.round(clamped)}%`
+}
 
 export function formatUnit(ind: Indicator): string {
-    const name = getRefName(ind.unit)
-    return name || '—'
+  const name = getRefName(ind.unit)
+  return name || '—'
+}
+
+export function fmt(value: number) {
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 })
+}
+
+export async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    alert('Link copied to clipboard!')
+  } catch {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.left = '-9999px'
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    alert('Link copied to clipboard!')
+  }
 }

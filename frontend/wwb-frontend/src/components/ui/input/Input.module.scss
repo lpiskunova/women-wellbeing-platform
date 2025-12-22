@@ -1,20 +1,25 @@
 .input {
-    height: 36px;
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid var(--input);
-    background: var(--card);
-    color: var(--foreground);
-    padding: 0 12px;
-    outline: none;
-  }
-  
-  .input::placeholder {
-    color: var(--muted-foreground);
-  }
-  
-  .input:focus {
-    border-color: var(--ring);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
-  }
-  
+  width: 100%;
+  min-height: 2.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input);
+  background-color: var(--card);
+  color: var(--foreground);
+  padding-inline: var(--padding-sm);
+  padding-block: 0;
+  outline: none;
+  font-size: var(--font-size-sm);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 0.1875rem rgba(139, 92, 246, 0.25);
+}

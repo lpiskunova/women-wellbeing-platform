@@ -1,235 +1,312 @@
+@use '@/styles/mixins' as mixins;
+
 .page {
-    min-height: 100vh;
-    padding: 48px 0;
-    background: linear-gradient(
-      180deg,
-      rgba(237, 233, 254, 0.6),
-      rgba(248, 250, 252, 0.7),
-      rgba(255, 255, 255, 1)
-    );
+  min-height: 100vh;
+  padding-block: var(--space-3xl);
+  background: linear-gradient(180deg, rgba(250, 245, 255, 0.7) 0%, #ffffff 55%);
+}
+
+.container {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding-inline: var(--space-lg);
+
+  @media (min-width: 48rem) {
+    padding-inline: var(--space-xl);
   }
-  
-  .container {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 0 24px;
+}
+
+.head {
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  margin: 0 0 var(--space-xs);
+  font-size: clamp(1.875rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: var(--font-weight-bold);
+  color: var(--foreground);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 48rem;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.tabsRow {
+  margin: var(--space-md) 0 var(--space-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.tabs {
+  @include mixins.flex-row(var(--space-sm), center, center, wrap);
+}
+
+.tab {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  padding: 0.35rem 0.9rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    background-color: var(--muted);
+    border-color: color-mix(in srgb, var(--border) 60%, var(--foreground) 40%);
   }
-  
-  .head {
-    margin-bottom: 18px;
+}
+
+.tabActive {
+  background: var(--accent);
+  border-color: var(--primary);
+  color: var(--accent-foreground);
+  box-shadow: 0 0.75rem 1.5rem rgba(139, 92, 246, 0.18);
+}
+
+.panel {
+  @include mixins.card(var(--space-lg), var(--space-lg));
+  border-radius: var(--radius-xl);
+  border-color: rgba(139, 92, 246, 0.2);
+  background-color: color-mix(in srgb, var(--card) 96%, transparent);
+}
+
+.panelHeader {
+  @include mixins.flex-row(var(--space-sm), flex-start);
+}
+
+.panelIcon {
+  margin-top: 0.125rem;
+  color: var(--primary);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.panelDesc {
+  margin: 0.375rem 0 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.section {
+  margin-top: var(--space-lg);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+.bodyText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.bulletList {
+  margin: var(--space-xs) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bulletItem {
+  @include mixins.flex-row(0.5rem, flex-start);
+  font-size: var(--font-size-sm);
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+
+.bulletDot {
+  flex: 0 0 auto;
+  margin-top: 0.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+.notice {
+  margin-top: var(--space-xs);
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(254, 243, 199, 0.4);
+}
+
+.noticeTitle {
+  margin: 0 0 0.25rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+}
+
+.noticeText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.polarityGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+
+  @media (min-width: 54rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
-  .title {
-    margin: 0 0 10px;
-    font-size: clamp(30px, 3.2vw, 44px);
-    line-height: 1.1;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--foreground);
+}
+
+.polarityCardSuccess,
+.polarityCardDanger {
+  border-radius: var(--radius-xl);
+}
+
+.polarityCardSuccess {
+  border: 1px solid color-mix(in srgb, var(--status-success) 45%, transparent);
+  background: rgba(22, 163, 74, 0.06);
+}
+
+.polarityCardDanger {
+  border: 1px solid color-mix(in srgb, var(--status-danger) 45%, transparent);
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.polarityTitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.polarityArrowSuccess {
+  color: var(--status-success);
+  font-weight: var(--font-weight-bold);
+}
+
+.polarityArrowDanger {
+  color: var(--status-danger);
+  font-weight: var(--font-weight-bold);
+}
+
+.polarityText {
+  margin: 0.5rem 0 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.polarityNote {
+  margin: 0.5rem 0 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.glossaryList {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.glossaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.glossaryTerm {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+}
+
+.glossaryDef {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.ethics {
+  @include mixins.card(var(--space-md), var(--space-lg));
+  margin-top: var(--space-xl);
+  border-radius: var(--radius-xl);
+  border-color: var(--border);
+  border-left-width: 4px;
+  border-left-color: var(--primary);
+}
+
+.ethicsIcon {
+  margin-top: 0.125rem;
+  color: var(--primary);
+}
+
+.ethicsTitle {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+:global(.dark) {
+  .page {
+    background: transparent;
   }
-  
-  .subtitle {
-    margin: 0;
-    color: var(--muted-foreground);
-    font-size: 16px;
-    line-height: 1.6;
-    max-width: 820px;
-  }
-  
-  .tabsRow {
-    margin: 18px 0 18px;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-  
+
   .tab {
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: rgba(255, 255, 255, 0.9);
-    color: rgba(51, 65, 85, 1);
-    height: 34px;
-    padding: 0 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease,
-      transform 0.15s ease;
+    background: transparent;
+    border-color: var(--input);
   }
-  
-  .tab:hover {
-    background: rgba(248, 250, 252, 1);
-    border-color: rgba(15, 23, 42, 0.2);
-  }
-  
+
   .tabActive {
-    background: rgba(237, 233, 254, 0.9);
-    border-color: rgba(139, 92, 246, 0.55);
-    color: rgba(88, 28, 135, 1);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.12);
+    background: rgba(129, 140, 248, 0.18);
+    border-color: var(--ring);
+    color: #e5e7eb;
   }
-  
+
   .panel {
-    border-radius: 22px;
-    border: 1px solid rgba(139, 92, 246, 0.18);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    background-color: color-mix(in srgb, var(--card) 96%, transparent);
+    border-color: rgba(148, 163, 184, 0.6);
   }
-  
-  .panelHeader {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+
+  .notice {
+    background: rgba(250, 204, 21, 0.1);
   }
-  
-  .panelIcon {
-    margin-top: 2px;
-    color: var(--primary);
+
+  .polarityCardSuccess {
+    background: rgba(22, 163, 74, 0.12);
   }
-  
-  .panelTitle {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--foreground);
+
+  .polarityCardDanger {
+    background: rgba(220, 38, 38, 0.12);
   }
-  
-  .panelDesc {
-    margin: 6px 0 0;
-    color: var(--muted-foreground);
-    line-height: 1.55;
-    font-size: 14px;
-  }
-  
-  .section {
-    margin-top: 18px;
-  }
-  
-  .h3 {
-    margin: 0 0 10px;
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--foreground);
-  }
-  
-  .p {
-    margin: 0 0 10px;
-    color: var(--muted-foreground);
-    line-height: 1.65;
-    font-size: 14px;
-  }
-  
-  .list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .li {
-    display: flex;
-    gap: 10px;
-    color: var(--muted-foreground);
-    line-height: 1.6;
-    font-size: 14px;
-  }
-  
-  .bullet {
-    color: var(--foreground);
-    font-weight: 900;
-    flex: 0 0 auto;
-    line-height: 1;
-    margin-top: 4px;
-  }
-  
-  .alert {
-    border-radius: 16px;
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    background: rgba(245, 158, 11, 0.08);
-    padding: 14px;
-  }
-  
-  .alertTitle {
-    margin: 0 0 6px;
-    font-weight: 900;
-    color: var(--foreground);
-  }
-  
-  .alertText {
-    margin: 0;
-    color: var(--muted-foreground);
-    line-height: 1.6;
-    font-size: 14px;
-  }
-  
-  .grid2 {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  
-  @media (min-width: 860px) {
-    .grid2 {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  
-  .miniCardGreen {
-    border-radius: 18px;
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    background: rgba(16, 185, 129, 0.08);
-  }
-  
-  .miniCardRed {
-    border-radius: 18px;
-    border: 1px solid rgba(244, 63, 94, 0.25);
-    background: rgba(244, 63, 94, 0.08);
-  }
-  
-  .miniTitle {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 900;
-    color: var(--foreground);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .miniP {
-    margin: 8px 0 0;
-    color: var(--muted-foreground);
-    line-height: 1.6;
-    font-size: 13px;
-  }
-  
-  .miniSmall {
-    margin: 8px 0 0;
-    color: var(--muted-foreground);
-    line-height: 1.6;
-    font-size: 12px;
-  }
-  
-  .ethics {
-    margin-top: 22px;
-    border-radius: 22px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    border-left: 4px solid rgba(139, 92, 246, 0.8);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  }
-  
-  .ethicsIcon {
-    margin-top: 2px;
-    color: var(--primary);
-  }
-  
+}

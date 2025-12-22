@@ -15,7 +15,10 @@ export const DOMAIN_LABELS: Record<string, string> = {
   WPS: 'Women, Peace & Security',
 }
 
-export const DOMAIN_VARIANTS: Record<string, 'rights' | 'safety' | 'economy' | 'education' | 'health' | 'representation' | 'other'> = {
+export const DOMAIN_VARIANTS: Record<
+  string,
+  'rights' | 'safety' | 'economy' | 'education' | 'health' | 'representation' | 'other'
+> = {
   LAW_INST: 'rights',
   SAFETY_VIOLENCE: 'safety',
   ECONOMIC_PARTICIPATION: 'economy',
@@ -24,3 +27,5 @@ export const DOMAIN_VARIANTS: Record<string, 'rights' | 'safety' | 'economy' | '
   POLITICAL_REPRESENT: 'representation',
   WPS: 'representation',
 }
+
+export type DomainVariant = (typeof DOMAIN_VARIANTS)[keyof typeof DOMAIN_VARIANTS]

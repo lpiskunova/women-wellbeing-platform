@@ -1,0 +1,42 @@
+@use '@/styles/mixins' as mixins;
+
+.resultsRow {
+  @include mixins.flex-row(0.75rem, center, space-between);
+  margin: 0.625rem 0 1rem;
+}
+
+.resultsPill {
+  @include mixins.flex-row(0.5rem, center);
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--muted-foreground);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-size: var(--font-size-s);
+
+  strong {
+    color: var(--foreground);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.resultsPillActive {
+  border-color: rgba(216, 180, 254, 0.65);
+  background: rgba(250, 245, 255, 0.75);
+  color: rgba(91, 33, 182, 1);
+}
+
+:global(.dark) {
+  .resultsPill {
+    background: transparent;
+    border: 1px solid var(--input);
+    box-shadow: none;
+  }
+
+  .resultsPillActive {
+    background: rgba(216, 180, 254, 0.65);
+    border-color: rgba(129, 140, 248, 0.7);
+    color: #e5e7eb;
+  }
+}

@@ -1,21 +1,27 @@
 @use './reset';
 @use './theme';
+@use './variables';
+@use './mixins';
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 .container {
-  max-width: 1280px;
+  max-width: 80rem;
   margin: 0 auto;
-  padding: 0 24px;
+  padding-inline: var(--space-lg);
 }
 
-@media (min-width: 768px) {
-  .container { padding: 0 32px; }
+@media (min-width: 48rem) {
+  .container {
+    padding-inline: var(--space-xl);
+  }
 }
 
-@media (min-width: 1024px) {
-  .container { padding: 0 48px; }
+@media (min-width: 64rem) {
+  .container {
+    padding-inline: var(--space-3xl);
+  }
 }
-

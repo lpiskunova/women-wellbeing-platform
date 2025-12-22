@@ -23,7 +23,6 @@ export function Button({
   const cls = cn(styles.btn, styles[variant], styles[size], className)
 
   if (asChild && React.isValidElement(children)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const child = children as React.ReactElement<any>
     return React.cloneElement(child, {
       className: cn(cls, child.props.className),

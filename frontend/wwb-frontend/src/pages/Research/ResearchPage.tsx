@@ -9,10 +9,8 @@ import {
   SlidersHorizontal,
   XCircle,
 } from 'lucide-react'
-
 import styles from './ResearchPage.module.scss'
 import { Select } from '@/components/ui/select/Select'
-import { http } from '@/shared/api/http'
 import { Button } from '@/components/ui/button/Button'
 import { Badge } from '@/components/ui/badge/Badge'
 import {
@@ -22,7 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card/Card'
-
 import {
   BRIEF_DATA_MODEL_NOTE_BY_ID,
   DEFAULT_RESEARCH_TOPICS,
@@ -36,8 +33,17 @@ import type {
   ResearchTemplateFull,
   ResearchTemplateResultRow,
   ResearchTemplateSummary,
-  ResearchTemplatesListResponse,
+  ResearchTemplateType,
 } from './entities/research.interfaces'
+import {
+  getResearchTemplates,
+  getResearchTemplateById,
+  type ResearchTemplateSummary as ApiResearchTemplateSummary,
+  type ResearchTemplateResult as ApiResearchTemplateResult,
+} from '@/shared/api/research'
+import { useApi } from '@/shared/hooks/useApi'
+import { AppErrorBoundary } from '@/app/providers/AppErrorBoundary'
+import { getErrorMessage } from '@/shared/api/apiError'
 
 function escapeCsv(value: unknown) {
   const s = String(value ?? '')
@@ -50,31 +56,28 @@ function toYearNumber(value: string) {
   return Number.isFinite(n) ? n : 0
 }
 
-function SelectField({
-    label,
-    value,
-    options,
-    onChange,
-  }: {
-    label: string
-    value: string
-    options: ReadonlyArray<{ value: string; label: string }>
-    onChange: (next: string) => void
-  }) {
-    return (
-      <div>
-        <label className={styles.fieldLabel}>{label}</label>
-        <Select<string>
-          value={value}
-          options={options}
-          onValueChange={onChange}
-          className={styles.selectRoot}
-          triggerClassName={styles.selectTrigger}
-          ariaLabel={label}
-        />
-      </div>
-    )
-}  
+type SelectFieldProps = {
+  label: string
+  value: string
+  options: ReadonlyArray<SelectOption>
+  onChange: (next: string) => void
+}
+
+function SelectField({ label, value, options, onChange }: SelectFieldProps) {
+  return (
+    <div>
+      <label className={styles.fieldLabel}>{label}</label>
+      <Select<string>
+        value={value}
+        options={options}
+        onValueChange={onChange}
+        className={styles.selectRoot}
+        triggerClassName={styles.selectTrigger}
+        ariaLabel={label}
+      />
+    </div>
+  )
+}
 
 function MetaFooter({ t }: { t: ResearchTemplateSummary }) {
   return (
@@ -180,16 +183,68 @@ function TemplateTable({
   )
 }
 
-export function ResearchPage() {
+function mapSummaryFromApi(api: ApiResearchTemplateSummary): ResearchTemplateSummary {
+  return {
+    id: api.id,
+    title: api.title,
+    description: api.description,
+    type: api.type as ResearchTemplateType,
+    topic: api.topic,
+    years: api.years,
+    criteria: api.criteria,
+    lastUpdated: api.lastUpdated,
+    sources: api.sources,
+  }
+}
+
+function mapFullFromApi(api: ApiResearchTemplateResult): ResearchTemplateFull {
+  return {
+    id: api.id,
+    title: api.title,
+    description: api.description,
+    type: api.type as ResearchTemplateType,
+    topic: api.topic,
+    years: api.years,
+    criteria: api.criteria,
+    lastUpdated: api.lastUpdated,
+    sources: api.sources,
+    results: api.results?.map((r) => ({
+      country: r.country,
+      region: r.region,
+      year: r.year,
+      values: r.values,
+      meetsAllCriteria: r.meetsAllCriteria,
+    })),
+    keyFindings: api.keyFindings ?? undefined,
+    leaderCountries: api.leaderCountries?.map((c) => ({
+      name: c.name,
+      femicideRate: c.femicideRate,
+      measuresCount: c.measuresCount,
+    })),
+    gapCountries: api.gapCountries?.map((c) => ({
+      name: c.name,
+      femicideRate: c.femicideRate,
+      measuresCount: c.measuresCount,
+    })),
+    contentWarning: api.contentWarning ?? undefined,
+  }
+}
+
+export function ResearchPageInner() {
   const navigate = useNavigate()
 
-  const [items, setItems] = useState<ResearchTemplateSummary[]>([])
+  const { data: templatesList, loading, error, refetch } = useApi(getResearchTemplates)
+
+  const items: ResearchTemplateSummary[] = useMemo(
+    () => (templatesList ? templatesList.items.map(mapSummaryFromApi) : []),
+    [templatesList],
+  )
+
   const [detailsById, setDetailsById] = useState<Record<string, ResearchTemplateFull | undefined>>(
     {},
   )
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [detailsError, setDetailsError] = useState<string | null>(null)
 
   const [sortBy, setSortBy] = useState('newest')
   const [filterTopic, setFilterTopic] = useState('all')
@@ -206,50 +261,51 @@ export function ResearchPage() {
   }
 
   useEffect(() => {
+    if (!templatesList || !templatesList.items.length) return
+
+    const list = templatesList
     let cancelled = false
 
-    async function load() {
+    async function loadDetails() {
       try {
-        setLoading(true)
-        setError(null)
-
-        const { data } = await http.get<ResearchTemplatesListResponse>('/research/templates')
-        if (cancelled) return
-
-        setItems(data.items)
+        setDetailsError(null)
 
         const settled = await Promise.allSettled(
-          data.items.map(async (it) => {
-            const res = await http.get<ResearchTemplateFull>(`/research/templates/${it.id}`)
-            return res.data
-          }),
+          list.items.map((it) => getResearchTemplateById(it.id)),
         )
-
         if (cancelled) return
 
-        const map: Record<string, ResearchTemplateFull> = {}
-        for (const s of settled) {
-          if (s.status === 'fulfilled') {
-            map[s.value.id] = s.value
+        setDetailsById((prev) => {
+          const next = { ...prev }
+          for (const s of settled) {
+            if (s.status === 'fulfilled') {
+              const full = mapFullFromApi(s.value)
+              next[full.id] = full
+            }
           }
+          return next
+        })
+      } catch (e) {
+        if (!cancelled) {
+          setDetailsError(getErrorMessage(e))
         }
-        setDetailsById(map)
-      } catch {
-        if (!cancelled) setError('Failed to load Research data.')
-      } finally {
-        if (!cancelled) setLoading(false)
       }
     }
 
-    void load()
+    void loadDetails()
+
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [templatesList, setDetailsError])
 
   const topicOptions = useMemo<SelectOption[]>(() => {
     const fromApi = new Set(items.map((i) => i.topic).filter(Boolean))
-    const ordered = [...DEFAULT_RESEARCH_TOPICS, ...[...fromApi].filter((t) => !DEFAULT_RESEARCH_TOPICS.includes(t))]
+    const ordered = [
+      ...DEFAULT_RESEARCH_TOPICS,
+      ...[...fromApi].filter((t) => !DEFAULT_RESEARCH_TOPICS.includes(t)),
+    ]
+
     return [{ value: 'all', label: 'All Topics' }, ...ordered.map((t) => ({ value: t, label: t }))]
   }, [items])
 
@@ -300,6 +356,7 @@ export function ResearchPage() {
     ])
 
     const csv = [header, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n')
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
 
@@ -313,7 +370,7 @@ export function ResearchPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
+      <div className="container">
         <header className={styles.head}>
           <h1 className={styles.title}>Research — Findings &amp; Templates</h1>
           <p className={styles.subtitle}>
@@ -331,44 +388,73 @@ export function ResearchPage() {
           </div>
 
           <div className={styles.filtersGrid}>
-            <SelectField label="Topic/Domain" value={filterTopic} options={topicOptions} onChange={setFilterTopic} />
-            <SelectField label="Type" value={filterType} options={RESEARCH_TYPE_OPTIONS} onChange={setFilterType} />
-            <SelectField label="Region" value={filterRegion} options={RESEARCH_REGION_OPTIONS} onChange={setFilterRegion} />
-            <SelectField label="Sort By" value={sortBy} options={RESEARCH_SORT_OPTIONS} onChange={setSortBy} />
+            <SelectField
+              label="Topic/Domain"
+              value={filterTopic}
+              options={topicOptions}
+              onChange={setFilterTopic}
+            />
+            <SelectField
+              label="Type"
+              value={filterType}
+              options={RESEARCH_TYPE_OPTIONS}
+              onChange={setFilterType}
+            />
+            <SelectField
+              label="Region"
+              value={filterRegion}
+              options={RESEARCH_REGION_OPTIONS}
+              onChange={setFilterRegion}
+            />
+            <SelectField
+              label="Sort By"
+              value={sortBy}
+              options={RESEARCH_SORT_OPTIONS}
+              onChange={setSortBy}
+            />
           </div>
 
           <div className={styles.filtersBottom}>
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={resetFilters}>
-                Reset Filters
+                Reset filters
               </Button>
             )}
           </div>
         </section>
 
-        <div className={styles.countRow}>
-          <div className={`${styles.countChip} ${hasActiveFilters ? styles.countChipActive : ''}`}>
-            <Search size={16} />
-            <span>
-              Showing <span className={styles.countStrong}>{filtered.length}</span> of {items.length} analyses
+        <div className={styles.resultsRow}>
+          <div
+            className={`${styles.resultsPill} ${hasActiveFilters ? styles.resultsPillActive : ''}`}
+          >
+            <Search size={14} />
+            <span className={styles.showingChip}>
+              Showing <strong>{filtered.length}</strong> of {items.length || '—'} analyses
             </span>
           </div>
         </div>
 
         {error && (
-          <Card>
+          <Card className={styles.statusCard}>
             <CardHeader>
-              <CardTitle>Research</CardTitle>
-              <CardDescription>{error}</CardDescription>
+              <CardTitle className={styles.statusTitle}>Research</CardTitle>
+              <CardDescription className={styles.statusText}>{detailsError}</CardDescription>
             </CardHeader>
+            <CardContent>
+              <Button variant="outline" size="sm" onClick={() => void refetch()}>
+                Retry
+              </Button>
+            </CardContent>
           </Card>
         )}
 
         {!error && loading && items.length === 0 && (
-          <Card>
+          <Card className={styles.statusCard}>
             <CardHeader>
-              <CardTitle>Loading…</CardTitle>
-              <CardDescription>Fetching research templates.</CardDescription>
+              <CardTitle className={styles.statusTitle}>Loading…</CardTitle>
+              <CardDescription className={styles.statusText}>
+                Fetching research templates.
+              </CardDescription>
             </CardHeader>
           </Card>
         )}
@@ -393,7 +479,7 @@ export function ResearchPage() {
               <Card key={t.id} className={styles.card}>
                 <CardHeader className={styles.cardHeader}>
                   <div className={styles.cardTop}>
-                    <div style={{ flex: 1 }}>
+                    <div className={styles.cardMain}>
                       <div className={styles.badgesRow}>
                         <CardTitle className={styles.cardTitle}>{t.title}</CardTitle>
 
@@ -410,7 +496,9 @@ export function ResearchPage() {
                         </Badge>
                       </div>
 
-                      <CardDescription>{t.description}</CardDescription>
+                      <CardDescription className={styles.cardDescription}>
+                        {t.description}
+                      </CardDescription>
 
                       <div className={styles.criteriaBlock}>
                         <p className={styles.criteriaLabel}>Criteria:</p>
@@ -480,7 +568,7 @@ export function ResearchPage() {
                         )}
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div className={styles.sideColumn}>
                         <div className={styles.sideBoxGreen}>
                           <p className={styles.sideTitleGreen}>Countries meeting both criteria</p>
 
@@ -524,7 +612,8 @@ export function ResearchPage() {
                                       {c.femicideRate} per 100k
                                     </Badge>
                                     <Badge variant="subtle" className={styles.sideBadgeRed}>
-                                      {c.measuresCount} measure{c.measuresCount !== 1 ? 's' : ''}
+                                      {c.measuresCount} measure
+                                      {c.measuresCount !== 1 ? 's' : ''}
                                     </Badge>
                                   </span>
                                 </div>
@@ -551,6 +640,7 @@ export function ResearchPage() {
                       )}
                     </>
                   )}
+
                   <MetaFooter t={t} />
                 </CardContent>
               </Card>
@@ -559,5 +649,13 @@ export function ResearchPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export function ResearchPage() {
+  return (
+    <AppErrorBoundary>
+      <ResearchPageInner />
+    </AppErrorBoundary>
   )
 }

@@ -14,6 +14,7 @@ type Props<T extends string> = {
   options: ReadonlyArray<SelectOption<T>>
   onValueChange: (value: T) => void
   ariaLabel?: string
+  placeholder?: string
   startIcon?: ReactNode
   className?: string
   triggerClassName?: string
@@ -24,6 +25,7 @@ export function Select<T extends string>({
   options,
   onValueChange,
   ariaLabel = 'Select',
+  placeholder,
   startIcon,
   className,
   triggerClassName,
@@ -39,16 +41,14 @@ export function Select<T extends string>({
   }, [options, value])
 
   const selectedLabel = useMemo(
-    () => options.find((o) => o.value === value)?.label ?? '',
-    [options, value],
+    () => options.find((o) => o.value === value)?.label ?? placeholder ?? '',
+    [options, value, placeholder],
   )
 
   const [open, setOpen] = useState(false)
 
-  // внутренний индекс для навигации по открытому меню
   const [internalActiveIndex, setInternalActiveIndex] = useState(0)
 
-  // когда меню закрыто — активным считаем выбранный пункт
   const activeIndex = open ? internalActiveIndex : selectedIndex
 
   const openMenu = () => {
@@ -72,14 +72,12 @@ export function Select<T extends string>({
     closeMenu()
   }
 
-  // фокус на активный пункт при открытии/перемещении
   useEffect(() => {
     if (!open) return
     const btn = itemRefs.current[activeIndex]
     btn?.focus()
   }, [open, activeIndex])
 
-  // закрытие по клику вне / Escape
   useEffect(() => {
     if (!open) return
 
@@ -129,7 +127,7 @@ export function Select<T extends string>({
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
             if (open) closeMenu()
-                else openMenu()
+            else openMenu()
           }
         }}
       >
@@ -157,7 +155,11 @@ export function Select<T extends string>({
                 type="button"
                 role="option"
                 aria-selected={selected}
-                className={cn(styles.item, active && styles.itemActive, selected && styles.itemSelected)}
+                className={cn(
+                  styles.item,
+                  active && styles.itemActive,
+                  selected && styles.itemSelected,
+                )}
                 onMouseEnter={() => setInternalActiveIndex(idx)}
                 onClick={() => choose(o.value)}
                 onKeyDown={(e) => {

@@ -1,0 +1,33 @@
+@use '@/styles/mixins' as mixins;
+
+.metaFooter {
+  @include mixins.text-caption;
+  @include mixins.flex-row(0.75rem, center, flex-start, wrap);
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.metaLeft {
+  @include mixins.flex-row(0.9rem, center, flex-start, wrap);
+}
+
+.metaFooter strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.metaLinks {
+  @include mixins.flex-row(0.75rem, center, flex-start, wrap);
+  margin-left: auto;
+}
+
+.metaLink {
+  @include mixins.flex-row(0.35rem, center);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
+}
+
+.metaLink:hover {
+  color: var(--primary);
+}

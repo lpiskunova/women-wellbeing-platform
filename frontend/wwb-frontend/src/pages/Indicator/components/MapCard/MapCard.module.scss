@@ -1,0 +1,131 @@
+@use '@/styles/mixins' as mixins;
+
+.vizCard {
+  border-color: rgba(216, 180, 254, 0.55);
+  background-color: var(--card);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.vizCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.08);
+}
+
+.vizHeader {
+  padding: 1rem 1.125rem 0.6rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.vizHeaderRow {
+  @include mixins.flex-row(var(--space-sm), flex-start, space-between, wrap);
+}
+
+.vizTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.vizActions {
+  @include mixins.flex-row(var(--space-xs), center);
+}
+
+.vizBody {
+  padding: 0.9rem 1.125rem 1rem;
+}
+
+.mapBox {
+  @include mixins.flex-row(var(--space-xs), center, center);
+  height: 520px;
+  border-radius: 0.875rem;
+  background: rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.mapPlaceholder {
+  text-align: center;
+  width: 520px;
+  max-width: 90%;
+  transform-origin: center;
+}
+
+.mapIcon {
+  font-size: 4rem;
+  opacity: 0.75;
+}
+
+.mapTitle {
+  margin-top: 0.6rem;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.mapText {
+  margin-top: 0.35rem;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+.legendRow {
+  @include mixins.flex-row(0.6rem, center, flex-start, wrap);
+  margin-top: 0.9rem;
+}
+
+.legendLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.legendBar {
+  flex: 1;
+  min-width: 180px;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.9));
+}
+
+.legendUnit {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+}
+
+.legendNoData {
+  @include mixins.flex-row(0.4rem, center);
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  color: var(--muted-foreground);
+}
+
+.square {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mapFeatures {
+  margin-top: 0.9rem;
+  padding: 0.9rem;
+  border-radius: 0.875rem;
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--foreground);
+}
+
+.featuresTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.35rem;
+}
+
+.mapFeatures ul {
+  margin: 0;
+  padding-left: 0.9rem;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}

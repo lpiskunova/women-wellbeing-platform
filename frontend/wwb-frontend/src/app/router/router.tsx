@@ -11,7 +11,6 @@ import ComparePage from '../../pages/Compare/ComparePage'
 import NotFoundPage from '@/pages/NotFound/NotFoundPage'
 import { ReferencesPage } from '@/pages/References/ReferencesPage'
 
-// eslint-disable-next-line react-refresh/only-export-components
 function RootLayout() {
   return (
     <>

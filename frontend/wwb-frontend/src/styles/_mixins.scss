@@ -1,0 +1,31 @@
+@mixin flex-row($gap: var(--space-sm), $align: center, $justify: flex-start, $wrap: nowrap) {
+  display: flex;
+  flex-direction: row;
+  align-items: $align;
+  justify-content: $justify;
+  gap: $gap;
+  flex-wrap: $wrap;
+}
+
+@mixin flex-column($gap: var(--space-sm), $align: stretch, $justify: flex-start) {
+  display: flex;
+  flex-direction: column;
+  align-items: $align;
+  justify-content: $justify;
+  gap: $gap;
+}
+
+@mixin card($py: var(--space-md), $px: var(--space-md)) {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 0.0625rem 0.125rem rgba(15, 23, 42, 0.06);
+  padding: $py $px;
+}
+
+@mixin text-caption {
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}

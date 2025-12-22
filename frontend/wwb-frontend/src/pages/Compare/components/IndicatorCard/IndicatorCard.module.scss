@@ -1,0 +1,82 @@
+@use '@/styles/mixins' as mixins;
+
+.indicatorCard {
+  border-color: rgba(216, 180, 254, 0.3);
+  background-color: var(--card);
+}
+
+.cardHeader {
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.cardTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+  line-height: 1.25;
+}
+
+.cardCode {
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}
+
+.cardBody {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 42.5rem;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--muted-foreground);
+  padding: 0.75rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.td {
+  padding: 0.75rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  vertical-align: top;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tr:hover .td {
+  background: rgba(139, 92, 246, 0.04);
+}
+
+:global(.dark) .tr:hover .td {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.valueCell {
+  @include mixins.flex-row(0.5rem, baseline, flex-start, wrap);
+}
+
+.valueStrong {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--foreground);
+}
+
+.muted {
+  @include mixins.text-caption;
+}
+
+.notice {
+  margin-top: 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+}

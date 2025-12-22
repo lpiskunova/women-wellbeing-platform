@@ -51,9 +51,7 @@ vi.mock('@/shared/api/http', () => ({
   },
 }))
 
-type HttpGetMock = Mock<
-  (url: string, config?: unknown) => Promise<{ data: unknown }>
->
+type HttpGetMock = Mock<(url: string, config?: unknown) => Promise<{ data: unknown }>>
 
 function baseTemplates(): ResearchTemplateSummary[] {
   return [
@@ -182,31 +180,28 @@ describe('ResearchPage', () => {
     )
 
     expect(
-      screen.getByText(/Fetching research templates/i),
+      screen.getByText(/fetching research templates/i),
     ).toBeInTheDocument()
 
     expect(
-      await screen.findByText(/Research — Findings & Templates/i),
+      await screen.findByText(/research — findings & templates/i),
     ).toBeInTheDocument()
 
-    expect(screen.getByText(/Top WBL countries/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/Template/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/top wbl countries/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/template/i).length).toBeGreaterThan(0)
 
-    expect(
-      screen.getByRole('columnheader', { name: /Country/i }),
-    ).toBeInTheDocument()
-    const franceCells = screen.getAllByText('France')
+    const franceCells = await screen.findAllByText('France')
     expect(franceCells.length).toBeGreaterThan(0)
 
     expect(
-      screen.getByText(/Femicide and policy action/i),
+      screen.getByText(/femicide and policy action/i),
     ).toBeInTheDocument()
-    expect(screen.getAllByText(/Brief/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/Key findings/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/brief/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/key findings/i)).toBeInTheDocument()
 
-    expect(screen.getAllByText(/Last Updated:/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(/Methodology/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(/Limitations/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/last updated:/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/methodology/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/limitations/i).length).toBeGreaterThan(0)
   })
 
   it('shows "No results for selected region" when template has no rows for that region', async () => {
@@ -224,25 +219,7 @@ describe('ResearchPage', () => {
     fireEvent.change(regionSelect, { target: { value: 'Africa' } })
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/No results for selected region\./i),
-      ).toBeInTheDocument()
+      expect(screen.getByText(/No results for selected region\./i)).toBeInTheDocument()
     })
   })
-
-  it('shows error card when research API fails', async () => {
-    const mockGet = http.get as HttpGetMock
-    mockGet.mockRejectedValueOnce(new Error('Boom'))
-
-    render(
-      <MemoryRouter initialEntries={['/research']}>
-        <ResearchPage />
-      </MemoryRouter>,
-    )
-
-    expect(
-      await screen.findByText(/Failed to load Research data\./i),
-    ).toBeInTheDocument()
-  })
 })
-

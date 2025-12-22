@@ -1,0 +1,36 @@
+@use '@/styles/mixins' as mixins;
+
+.vizCard {
+  border-color: rgba(216, 180, 254, 0.55);
+  background-color: var(--card);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.vizCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.08);
+}
+
+.vizHeader {
+  padding: 1rem 1.125rem 0.6rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.vizHeaderRow {
+  @include mixins.flex-row(var(--space-sm), flex-start, space-between, wrap);
+}
+
+.vizTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.vizActions {
+  @include mixins.flex-row(var(--space-xs), center);
+}
+
+.vizBody {
+  padding: 0.9rem 1.125rem 1rem;
+}

@@ -24,3 +24,23 @@ export interface AudienceItem {
   description: string
   color: Accent
 }
+
+export interface HeroCopy {
+  title: string
+  description: string
+  primaryCtaLabel: string
+  primaryCtaHref: string
+  secondaryCtaLabel: string
+  secondaryCtaHref: string
+  sensitiveMessage: string
+}
+
+export interface SectionCopy {
+  title: string
+  subtitle: string
+}
+
+export interface DisclaimerCopy {
+  title: string
+  description: string
+}

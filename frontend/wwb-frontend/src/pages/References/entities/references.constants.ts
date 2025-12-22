@@ -1,4 +1,4 @@
-import type { DataSource } from "./references.interfaces"
+import type { DataSource } from './references.interfaces'
 
 export const DATA_SOURCES: DataSource[] = [
   {
@@ -16,8 +16,7 @@ export const DATA_SOURCES: DataSource[] = [
   {
     name: 'Women, Peace and Security (WPS) Index',
     organization: 'GIWPS',
-    description:
-      'Composite measure of inclusion, justice, and security for women globally.',
+    description: 'Composite measure of inclusion, justice, and security for women globally.',
     version: '2023',
     license: 'Open Data',
     licenseUrl: 'https://giwps.georgetown.edu/',
@@ -40,8 +39,7 @@ export const DATA_SOURCES: DataSource[] = [
   {
     name: 'Crime and Criminal Justice Statistics',
     organization: 'UNODC',
-    description:
-      'Data on gender-based violence including femicide and intimate partner violence.',
+    description: 'Data on gender-based violence including femicide and intimate partner violence.',
     version: '2023',
     license: 'Open Data',
     licenseUrl: 'https://www.unodc.org/',
