@@ -34,3 +34,13 @@
 .vizBody {
   padding: 0.9rem 1.125rem 1rem;
 }
+
+.stateText {
+  font-size: var(--font-size-sm);
+  color: var(--muted-foreground);
+  padding: 0.9rem 0 0.6rem;
+}
+
+.stateActions {
+  margin-top: 0.4rem;
+}

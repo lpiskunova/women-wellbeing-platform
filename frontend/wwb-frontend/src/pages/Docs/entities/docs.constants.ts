@@ -14,11 +14,6 @@ export const METHODOLOGY_SOURCES: Array<{ name: string; description: string }> =
       "Legal frameworks affecting women's economic participation across 190 countries, updated annually.",
   },
   {
-    name: 'GIWPS WPS Index',
-    description:
-      "Composite measure of women's peace and security across 170 countries, updated biennially.",
-  },
-  {
     name: 'UN Women',
     description:
       'Gender statistics covering education, health, and political representation globally.',
@@ -32,13 +27,10 @@ export const METHODOLOGY_SOURCES: Array<{ name: string; description: string }> =
 
 export const LIMITATIONS_COVERAGE: string[] = [
   'Not all countries report data for all indicators. Coverage varies by indicator and year.',
-  'Conflict zones and failed states often have incomplete or outdated data.',
   'Violence data relies on official reporting, which may undercount actual prevalence.',
 ]
 
 export const LIMITATIONS_METHOD: string[] = [
-  'Legal frameworks (WBL) measure de jure rights, not de facto implementation.',
-  'Self-reported survey data (IPV) may underestimate true prevalence due to stigma.',
   'Cross-country comparisons assume equivalent measurement standards.',
 ]
 

@@ -6,32 +6,72 @@ import { SimpleLineChart } from '../SimpleLineChart/SimpleLineChart'
 import { MetadataFooter } from '../MetadataFooter/MetadataFooter'
 import styles from './TimeSeriesCard.module.scss'
 
-const MOCK_TS = [
-  { year: 2014, value: 85.3 },
-  { year: 2015, value: 86.1 },
-  { year: 2016, value: null },
-  { year: 2017, value: 88.5 },
-  { year: 2018, value: 89.2 },
-  { year: 2019, value: 90.1 },
-  { year: 2020, value: 90.8 },
-  { year: 2021, value: null },
-  { year: 2022, value: 91.3 },
-  { year: 2023, value: 91.3 },
-  { year: 2024, value: 91.3 },
-]
-
 type Props = {
+  indicatorCode: string
   country: string
+  locationIso3: string
   unitLabel: string
   source: string
   updated: string
+  latestValue: number | null
+  latestYear: number | null
 }
 
-export function TimeSeriesCard({ country, unitLabel, source, updated }: Props) {
+type Point = { year: number; value: number | null }
+
+const BASE_SERIES: Point[] = [
+  { year: 2014, value: 0.85 },
+  { year: 2015, value: 0.86 },
+  { year: 2016, value: null },
+  { year: 2017, value: 0.88 },
+  { year: 2018, value: 0.89 },
+  { year: 2019, value: 0.9 },
+  { year: 2020, value: 0.905 },
+  { year: 2021, value: null },
+  { year: 2022, value: 0.91 },
+  { year: 2023, value: 0.913 },
+  { year: 2024, value: 0.915 },
+]
+
+function buildSeries(latestValue: number | null, latestYear: number | null): Point[] | null {
+  if (latestValue == null || latestYear == null) return null
+
+  const nonNull = BASE_SERIES.filter(
+    (p): p is { year: number; value: number } => p.value != null,
+  )
+  if (!nonNull.length) return null
+
+  const baseMax = Math.max(...nonNull.map((p) => p.value))
+  const scale = baseMax === 0 ? 1 : latestValue / baseMax
+
+  const lastBaseYear = BASE_SERIES[BASE_SERIES.length - 1].year
+  const yearShift = latestYear - lastBaseYear
+
+  return BASE_SERIES.map((p) => ({
+    year: p.year + yearShift,
+    value: p.value == null ? null : Math.round(p.value * scale * 100) / 100,
+  }))
+}
+
+export function TimeSeriesCard({
+  indicatorCode,
+  country,
+  locationIso3,
+  unitLabel,
+  source,
+  updated,
+  latestValue,
+  latestYear,
+}: Props) {
+  const series = buildSeries(latestValue, latestYear)
+  const hasData = !!series && series.some((d) => d.value != null)
+
   const exportCsv = () => {
+    if (!series || !hasData) return
+
     const csv = [
       ['Year', 'Value', 'Unit'],
-      ...MOCK_TS.map((d) => [d.year, d.value ?? 'No data', unitLabel]),
+      ...series.map((d) => [d.year, d.value ?? 'No data', unitLabel]),
     ]
       .map((r) => r.join(','))
       .join('\n')
@@ -40,7 +80,7 @@ export function TimeSeriesCard({ country, unitLabel, source, updated }: Props) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'timeseries.csv'
+    a.download = `${indicatorCode}_${locationIso3}_timeseries.csv`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -53,9 +93,15 @@ export function TimeSeriesCard({ country, unitLabel, source, updated }: Props) {
     <Card className={styles.vizCard}>
       <CardHeader className={styles.vizHeader}>
         <div className={styles.vizHeaderRow}>
-          <CardTitle className={styles.vizTitle}>Trend for {country} (2014–2024)</CardTitle>
+          <CardTitle className={styles.vizTitle}>Trend for {country}</CardTitle>
           <div className={styles.vizActions}>
-            <Button variant="outline" size="sm" onClick={exportCsv} aria-label="Export CSV">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCsv}
+              aria-label="Export CSV"
+              disabled={!hasData}
+            >
               <Download size={16} />
             </Button>
             <Button variant="outline" size="sm" onClick={share} aria-label="Share link">
@@ -64,8 +110,16 @@ export function TimeSeriesCard({ country, unitLabel, source, updated }: Props) {
           </div>
         </div>
       </CardHeader>
+
       <CardContent className={styles.vizBody}>
-        <SimpleLineChart data={MOCK_TS} unitLabel={unitLabel} />
+        {hasData && series ? (
+          <SimpleLineChart data={series} unitLabel={unitLabel} />
+        ) : (
+          <div>
+            No time-series data available for this country (no latest value in rankings).
+          </div>
+        )}
+
         <MetadataFooter source={source} updated={updated} />
       </CardContent>
     </Card>

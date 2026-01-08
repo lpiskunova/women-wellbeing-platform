@@ -159,17 +159,14 @@ function HowToReadContent() {
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Time-Series Interpretation</h3>
         <p className={styles.bodyText}>
-          Gaps in line charts indicate missing data for those years. Do not interpolate between
-          points. Methodology changes may cause discontinuities marked in the data.
+          Gaps in line charts indicate missing data for those years.
         </p>
       </section>
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Map Visualization</h3>
         <p className={styles.bodyText}>
-          Color intensity represents value magnitude. Gray/hatched areas indicate no data. Tooltips
-          show exact values, ranks, and sources. Selecting a country triggers auto-comparison with
-          similar values or regional neighbors.
+          Color intensity represents value magnitude. Gray/hatched areas indicate no data.
         </p>
       </section>
     </>

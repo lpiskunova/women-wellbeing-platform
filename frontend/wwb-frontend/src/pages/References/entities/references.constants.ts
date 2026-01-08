@@ -14,21 +14,10 @@ export const DATA_SOURCES: DataSource[] = [
     coverage: '190 countries',
   },
   {
-    name: 'Women, Peace and Security (WPS) Index',
-    organization: 'GIWPS',
-    description: 'Composite measure of inclusion, justice, and security for women globally.',
-    version: '2023',
-    license: 'Open Data',
-    licenseUrl: 'https://giwps.georgetown.edu/',
-    lastUpdated: '2023',
-    website: 'https://giwps.georgetown.edu/',
-    coverage: '170 countries',
-  },
-  {
     name: 'Gender Statistics',
     organization: 'UN Women',
     description:
-      'Comprehensive gender data covering education, health, economic participation, and representation.',
+      'Comprehensive gender data covering violence; security, peace; marriage, work, children.',
     version: '2024',
     license: 'UN Open Data',
     licenseUrl: 'https://data.un.org/',

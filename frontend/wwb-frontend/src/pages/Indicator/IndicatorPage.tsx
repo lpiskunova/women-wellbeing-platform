@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button/Button'
 import { Badge } from '@/components/ui/badge/Badge'
 import { RankingCard, type RankingRow } from './components/RankingCard/RankingCard'
 import { TimeSeriesCard } from './components/TimeSeriesCard/TimeSeriesCard'
-import { MapCard } from './components/MapCard/MapCard'
+import { MapCard, type MapDatum } from './components/MapCard/MapCard'
 import { BottomCards } from './components/BottomCards/BottomCards'
 import styles from './IndicatorPage.module.scss'
 
@@ -90,6 +90,28 @@ export function IndicatorPageInner() {
     }))
   }, [rankingsData])
 
+  const mapData: MapDatum[] = useMemo(() => {
+    if (!rankingsData) return []
+  
+    return rankingsData.items
+      .map<MapDatum | null>((it) => {
+        const iso3 = it.location?.iso3
+        const name = it.location?.name
+        if (!iso3 || !name) return null
+  
+        const value =
+          typeof it.value === 'number' && Number.isFinite(it.value) ? it.value : null
+  
+        return {
+          iso3: iso3.toUpperCase(),
+          countryName: name,
+          value,
+          rank: it.rank,
+        }
+      })
+      .filter((d): d is MapDatum => d !== null)
+  }, [rankingsData])  
+
   const rankingYear = useMemo(
     () => (rankingsData && rankingsData.latestYear != null ? String(rankingsData.latestYear) : '—'),
     [rankingsData],
@@ -99,12 +121,29 @@ export function IndicatorPageInner() {
     return rankingRows.find((r) => r.value != null)?.country ?? rankingRows[0]?.country ?? null
   }, [rankingRows])
 
-  const activeCountry = useMemo(() => {
-    if (selectedCountry && rankingRows.some((r) => r.country === selectedCountry)) {
-      return selectedCountry
-    }
-    return defaultCountry
-  }, [selectedCountry, defaultCountry, rankingRows])
+  const activeCountry = useMemo(
+    () => selectedCountry ?? defaultCountry,
+    [selectedCountry, defaultCountry],
+  )
+
+  const activeLocation = useMemo(() => {
+    if (!rankingsData || !activeCountry) return null
+    return rankingsData.items.find((it) => it.location?.name === activeCountry) ?? null
+  }, [rankingsData, activeCountry])
+
+  const activeIso3 = activeLocation?.location?.iso3 ?? null
+
+  const activeValue = useMemo(
+    () =>
+      activeLocation &&
+      typeof activeLocation.value === 'number' &&
+      Number.isFinite(activeLocation.value)
+        ? activeLocation.value
+        : null,
+    [activeLocation],
+  )
+
+  const activeYear = activeLocation?.year ?? null
 
   if (status === 'loading' || status === 'idle') {
     return (
@@ -306,12 +345,16 @@ export function IndicatorPageInner() {
 
         {tab === 'trends' ? (
           <div className={styles.section}>
-            {activeCountry ? (
+            {activeCountry && activeIso3 ? (
               <TimeSeriesCard
+                indicatorCode={indicator.code}
                 country={activeCountry}
+                locationIso3={activeIso3}
                 unitLabel={unitLabel}
                 source={sourceLabel}
                 updated={updatedLabel}
+                latestValue={activeValue}
+                latestYear={activeYear}
               />
             ) : (
               <Card className={styles.vizCard}>
@@ -328,7 +371,31 @@ export function IndicatorPageInner() {
 
         {tab === 'map' ? (
           <div className={styles.section}>
-            <MapCard unitLabel={unitLabel} source={sourceLabel} updated={updatedLabel} />
+            {rankingsLoading && !rankingsData ? (
+              <Card className={styles.vizCard}>
+                <CardContent className={styles.loadingBox}>Loading map…</CardContent>
+              </Card>
+            ) : rankingsError ? (
+              <Card className={styles.vizCard}>
+                <CardContent className={styles.loadingBox}>
+                  Couldn’t load map data: {rankingsError}
+                  <div style={{ marginTop: 8 }}>
+                    <Button variant="ghost" size="sm" onClick={() => void refetchRankings()}>
+                      Retry
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <MapCard
+                unitLabel={unitLabel}
+                source={sourceLabel}
+                updated={updatedLabel}
+                data={mapData}
+                selectedCountry={activeCountry ?? undefined}
+                onSelectCountry={(name) => setSelectedCountry(name)}
+              />
+            )}
           </div>
         ) : null}
 

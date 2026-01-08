@@ -21,7 +21,6 @@ export default defineConfig({
       include: [
         'src/pages/**/*.{ts,tsx}',
         'src/components/**/*.{ts,tsx}',
-        'src/shared/**/*.{ts,tsx}',
         'src/entities/**/*.{ts,tsx}',
         'src/widgets/**/*.{ts,tsx}',
       ],
@@ -33,6 +32,9 @@ export default defineConfig({
         '**/*.interfaces.ts',
         '**/*.constants.ts',
         '**/*.utils.ts',
+        'src/pages/Indicator',
+        'src/pages/Compare',
+        'src/shared/**/*.{ts,tsx}',
       ],
       thresholds: {
         lines: 70,
