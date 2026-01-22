@@ -412,3 +412,114 @@
     }
   }
 }
+
+.searchDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+
+  padding: 0.375rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  box-shadow: 0 1rem 1.625rem rgba(17, 24, 39, 0.14);
+
+  z-index: 80;
+
+  max-height: 20rem;
+  overflow: auto;
+}
+
+:global(.dark) .searchDropdown {
+  border-color: #334155;
+  background-color: #0f172a;
+}
+
+.searchRow {
+  padding: 0.625rem;
+  font-size: var(--font-size-sm);
+  color: #374151;
+  opacity: 0.85;
+
+  :global(.dark) & {
+    color: #f1f5f9;
+  }
+}
+
+.searchGroup {
+  & + & {
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid var(--border);
+
+    :global(.dark) & {
+      border-top-color: #334155;
+    }
+  }
+}
+
+.searchGroupTitle {
+  padding: 0.5rem 0.625rem 0.375rem;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
+  color: #6b7280;
+
+  :global(.dark) & {
+    color: #94a3b8;
+  }
+}
+
+.searchItem {
+  @include mixins.flex-row(var(--space-sm), center, space-between);
+
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+
+  padding: 0.625rem;
+  border-radius: var(--radius-md);
+
+  font-size: var(--font-size-sm);
+  color: #374151;
+  text-align: left;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: #f3e8ff;
+    color: #5b21b6;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.1875rem rgba(168, 85, 247, 0.25);
+  }
+
+  :global(.dark) & {
+    color: #f1f5f9;
+
+    &:hover {
+      background-color: rgba(88, 28, 135, 0.35);
+      color: #d8b4fe;
+    }
+  }
+}
+
+.searchMain {
+  font-weight: var(--font-weight-medium);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchMeta {
+  flex: 0 0 auto;
+  opacity: 0.7;
+  font-size: 0.75rem;
+}

@@ -308,6 +308,11 @@
   text-align: center;
 }
 
+.colRegion {
+  width: 14rem;
+  min-width: 14rem;
+}
+
 .tbody td {
   padding: 0.875rem 0.875rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.08);
@@ -335,12 +340,16 @@
 }
 
 .regionBadge {
-  justify-content: center;
-  width: 5rem;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
   border: 1px solid rgba(15, 23, 42, 0.12) !important;
   background: transparent !important;
   color: var(--foreground) !important;
   font-weight: var(--font-weight-medium) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metBadge {

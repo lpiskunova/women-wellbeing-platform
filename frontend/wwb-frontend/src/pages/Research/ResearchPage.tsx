@@ -7,7 +7,6 @@ import {
   ExternalLink,
   Search,
   SlidersHorizontal,
-  XCircle,
 } from 'lucide-react'
 import styles from './ResearchPage.module.scss'
 import { Select } from '@/components/ui/select/Select'
@@ -118,30 +117,27 @@ function TemplateTable({
   return (
     <div className={styles.tableWrap}>
       <table className={styles.table}>
-        <thead className={styles.thead}>
-          <tr>
-            <th>Rank</th>
-            <th>Country</th>
-            <th>Region</th>
-            <th>Year</th>
-            {valueKeys.map((k) => (
-              <th key={k} className={styles.right}>
-                {k}
-              </th>
-            ))}
-            <th className={styles.center}>Status</th>
-            <th className={styles.right}>Actions</th>
-          </tr>
-        </thead>
-
+      <thead className={styles.thead}>
+        <tr>
+          <th>Rank</th>
+          <th>Country</th>
+          <th className={styles.colRegion}>Region</th>
+          <th>Year</th>
+          {valueKeys.map((k) => (
+            <th key={k} className={styles.right}>
+              {k}
+            </th>
+          ))}
+        </tr>
+      </thead>
         <tbody className={styles.tbody}>
           {results.map((r, idx) => (
-            <tr key={`${templateId}-${r.country}`}>
+            <tr key={`${templateId}-${r.country}-${r.year}-${idx}`}>
               <td className={styles.muted}>#{idx + 1}</td>
               <td>
                 <strong>{r.country}</strong>
               </td>
-              <td>
+              <td className={styles.colRegion}>
                 <Badge variant="subtle" className={styles.regionBadge}>
                   {r.region}
                 </Badge>
@@ -153,28 +149,6 @@ function TemplateTable({
                   <strong>{r.values[k]}</strong>
                 </td>
               ))}
-
-              <td className={styles.center}>
-                {r.meetsAllCriteria ? (
-                  <Badge variant="subtle" className={styles.metBadge}>
-                    <CheckCircle2 size={14} />
-                    Met
-                  </Badge>
-                ) : (
-                  <Badge variant="subtle" className={styles.notMetBadge}>
-                    <XCircle size={14} />
-                    Not met
-                  </Badge>
-                )}
-              </td>
-
-              <td className={styles.right}>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to={`/countries?country=${encodeURIComponent(r.country)}`}>
-                    View <ExternalLink size={14} />
-                  </Link>
-                </Button>
-              </td>
             </tr>
           ))}
         </tbody>
@@ -539,92 +513,130 @@ export function ResearchPageInner() {
 
                 <CardContent className={styles.cardContent}>
                   {isBrief && (
-                    <div className={styles.briefGrid}>
-                      <div>
-                        <p className={styles.sectionTitle}>Key findings</p>
+                    (() => {
+                      const leaders = full?.leaderCountries ?? []
+                      const gaps = full?.gapCountries ?? []
 
-                        {!full?.keyFindings ? (
-                          <p className={styles.muted}>Loading details…</p>
-                        ) : (
-                          <ul className={styles.findings}>
-                            {full.keyFindings.map((f) => (
-                              <li key={f} className={styles.findingItem}>
-                                <CheckCircle2 size={16} className={styles.findingIcon} />
-                                <span>{f}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                      const isUnodcFemicide = t.id === 'femicide-policy-brief'
+                      const fmtInt = (n: number) => new Intl.NumberFormat().format(n)
 
-                        {BRIEF_DATA_MODEL_NOTE_BY_ID[t.id] && (
-                          <div className={styles.modelBox}>
-                            <p className={styles.modelTitle}>How this brief uses data model</p>
-                            <p style={{ margin: 0 }}>{BRIEF_DATA_MODEL_NOTE_BY_ID[t.id]}</p>
+                      const hasLeaders =
+                        leaders.length > 0 && leaders.some((c) => c.femicideRate != null || c.measuresCount != null)
+
+                      const hasGaps =
+                        gaps.length > 0 && gaps.some((c) => c.femicideRate != null || c.measuresCount != null)
+
+                      const showSide = hasLeaders || hasGaps
+
+                      return (
+                        <div className={styles.briefGrid}>
+                          <div style={!showSide ? { gridColumn: '1 / -1' } : undefined}>
+                            <p className={styles.sectionTitle}>Key findings</p>
+
+                            {!full?.keyFindings ? (
+                              <p className={styles.muted}>Loading details…</p>
+                            ) : (
+                              <ul className={styles.findings}>
+                                {full.keyFindings.map((f) => (
+                                  <li key={f} className={styles.findingItem}>
+                                    <CheckCircle2 size={16} className={styles.findingIcon} />
+                                    <span>{f}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+
+                            {BRIEF_DATA_MODEL_NOTE_BY_ID[t.id] && (
+                              <div className={styles.modelBox}>
+                                <p className={styles.modelTitle}>How this brief uses data model</p>
+                                <p style={{ margin: 0 }}>{BRIEF_DATA_MODEL_NOTE_BY_ID[t.id]}</p>
+                              </div>
+                            )}
+
+                            {full?.contentWarning && <p className={styles.contentNote}>{full.contentWarning}</p>}
                           </div>
-                        )}
 
-                        {full?.contentWarning && (
-                          <p className={styles.contentNote}>{full.contentWarning}</p>
-                        )}
-                      </div>
+                          {showSide && (
+                            <div className={styles.sideColumn}>
+                              {hasLeaders && (
+                                <div className={styles.sideBoxGreen}>
+                                  <p className={styles.sideTitleGreen}>
+                                    {isUnodcFemicide ? 'Top countries by total victims (counts)' : 'Countries meeting both criteria'}
+                                  </p>
 
-                      <div className={styles.sideColumn}>
-                        <div className={styles.sideBoxGreen}>
-                          <p className={styles.sideTitleGreen}>Countries meeting both criteria</p>
+                                  <div className={styles.sideList}>
+                                    {leaders.map((c) => {
+                                      const showRate = c.femicideRate != null
+                                      const showMeasures = c.measuresCount != null
 
-                          {!full?.leaderCountries ? (
-                            <p className={styles.muted} style={{ margin: '10px 0 0' }}>
-                              Loading…
-                            </p>
-                          ) : (
-                            <div className={styles.sideList}>
-                              {full.leaderCountries.map((c) => (
-                                <div key={c.name} className={styles.sideRow}>
-                                  <span className={styles.sideName}>{c.name}</span>
-                                  <span className={styles.sideBadges}>
-                                    <Badge variant="subtle" className={styles.sideBadgeGreen}>
-                                      {c.femicideRate} per 100k
-                                    </Badge>
-                                    <Badge variant="subtle" className={styles.sideBadgeGreen}>
-                                      {c.measuresCount}+ measures
-                                    </Badge>
-                                  </span>
+                                      if (!showRate && !showMeasures) return null
+
+                                      return (
+                                        <div key={c.name} className={styles.sideRow}>
+                                          <span className={styles.sideName}>{c.name}</span>
+                                          <span className={styles.sideBadges}>
+                                            {showRate && (
+                                              <Badge variant="subtle" className={styles.sideBadgeGreen}>
+                                                {c.femicideRate} per 100k
+                                              </Badge>
+                                            )}
+                                            {showMeasures && (
+                                              <Badge variant="subtle" className={styles.sideBadgeGreen}>
+                                                {isUnodcFemicide
+                                                  ? `${fmtInt(c.measuresCount)} victims`
+                                                  : `${c.measuresCount}+ measures`}
+                                              </Badge>
+                                            )}
+                                          </span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
-                              ))}
+                              )}
+
+                              {hasGaps && (
+                                <div className={styles.sideBoxRed}>
+                                  <p className={styles.sideTitleRed}>
+                                    {isUnodcFemicide ? 'Top countries by rate (per 100k)' : 'High rates, limited measures'}
+                                  </p>
+
+                                  <div className={styles.sideList}>
+                                    {gaps.map((c) => {
+                                      const showRate = c.femicideRate != null
+                                      const showMeasures = c.measuresCount != null
+
+                                      if (!showRate && !showMeasures) return null
+
+                                      return (
+                                        <div key={c.name} className={styles.sideRow}>
+                                          <span className={styles.sideName}>{c.name}</span>
+                                          <span className={styles.sideBadges}>
+                                            {showRate && (
+                                              <Badge variant="subtle" className={styles.sideBadgeRed}>
+                                                {c.femicideRate} per 100k
+                                              </Badge>
+                                            )}
+                                            {showMeasures && (
+                                              <Badge variant="subtle" className={styles.sideBadgeRed}>
+                                                {isUnodcFemicide
+                                                  ? `${fmtInt(c.measuresCount)} victims`
+                                                  : `${c.measuresCount} measure${c.measuresCount !== 1 ? 's' : ''}`}
+                                              </Badge>
+                                            )}
+                                          </span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-
-                        <div className={styles.sideBoxRed}>
-                          <p className={styles.sideTitleRed}>High rates, limited measures</p>
-
-                          {!full?.gapCountries ? (
-                            <p className={styles.muted} style={{ margin: '10px 0 0' }}>
-                              Loading…
-                            </p>
-                          ) : (
-                            <div className={styles.sideList}>
-                              {full.gapCountries.map((c) => (
-                                <div key={c.name} className={styles.sideRow}>
-                                  <span className={styles.sideName}>{c.name}</span>
-                                  <span className={styles.sideBadges}>
-                                    <Badge variant="subtle" className={styles.sideBadgeRed}>
-                                      {c.femicideRate} per 100k
-                                    </Badge>
-                                    <Badge variant="subtle" className={styles.sideBadgeRed}>
-                                      {c.measuresCount} measure
-                                      {c.measuresCount !== 1 ? 's' : ''}
-                                    </Badge>
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                      )
+                    })()
                   )}
-
                   {!isBrief && (
                     <>
                       {!visibleResults ? (
