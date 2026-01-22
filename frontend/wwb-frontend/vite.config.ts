@@ -22,7 +22,6 @@ export default defineConfig({
         'src/pages/**/*.{ts,tsx}',
         'src/components/**/*.{ts,tsx}',
         'src/entities/**/*.{ts,tsx}',
-        'src/widgets/**/*.{ts,tsx}',
       ],
       exclude: [
         'src/main.tsx',
@@ -34,7 +33,9 @@ export default defineConfig({
         '**/*.utils.ts',
         'src/pages/Indicator',
         'src/pages/Compare',
+        'src/pages/Countries',
         'src/shared/**/*.{ts,tsx}',
+        'src/widgets/**/*.{ts,tsx}',
       ],
       thresholds: {
         lines: 70,
